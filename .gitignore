@@ -1,7 +1,7 @@
 assets/opencv.js
 assets/opencv_js.wasm
 assets/*.onnx
-dist/index.html
+# dist/index.html
 dev.html
 
 assets/*.gz
