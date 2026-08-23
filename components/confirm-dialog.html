@@ -1,0 +1,14 @@
+<!-- Reusable confirmation dialog. API: await AppConfirm.ask({ title, message, confirmLabel, cancelLabel, tone }) -->
+<dialog class="app-confirm-dialog" id="appConfirmDialog">
+  <h2 id="appConfirmTitle">確認</h2><p id="appConfirmMessage"></p>
+  <button id="appConfirmCancel" type="button">キャンセル</button><button id="appConfirmOk" type="button">実行する</button>
+</dialog>
+<script>
+(() => {
+  const dialog=document.getElementById('appConfirmDialog'),title=document.getElementById('appConfirmTitle'),message=document.getElementById('appConfirmMessage'),cancel=document.getElementById('appConfirmCancel'),ok=document.getElementById('appConfirmOk');let resolver=null;
+  const finish=v=>{if(dialog?.open)dialog.close();const r=resolver;resolver=null;r?.(v);};
+  function ask(o={}){title.textContent=o.title||'確認';message.textContent=o.message||'';cancel.textContent=o.cancelLabel||'キャンセル';ok.textContent=o.confirmLabel||'実行する';return new Promise(r=>{resolver=r;dialog.showModal();});}
+  cancel?.addEventListener('click',()=>finish(false));ok?.addEventListener('click',()=>finish(true));dialog?.addEventListener('cancel',e=>{e.preventDefault();finish(false);});
+  window.AppConfirm=Object.freeze({ask});
+})();
+</script>

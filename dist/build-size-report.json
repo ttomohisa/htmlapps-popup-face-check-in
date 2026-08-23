@@ -1,0 +1,43 @@
+{
+    "app":  "Pop-up Face Check-in",
+    "version":  "1.0.0",
+    "builtAtUtc":  "2026-08-23T06:49:31.3622419Z",
+    "output":  "dist/index.html",
+    "outputBytes":  13829012,
+    "outputMiB":  13.2,
+    "runtimeNetworkBlocked":  true,
+    "assets":  [
+                   {
+                       "label":  "ORT WASM",
+                       "rawBytes":  11210254,
+                       "packedBytes":  2878594,
+                       "gzipBytes":  2878594,
+                       "savingPercent":  74.3,
+                       "compression":  "gzip"
+                   },
+                   {
+                       "label":  "ORT MJS",
+                       "rawBytes":  20856,
+                       "packedBytes":  8391,
+                       "gzipBytes":  8391,
+                       "savingPercent":  59.8,
+                       "compression":  "gzip"
+                   },
+                   {
+                       "label":  "YuNet",
+                       "rawBytes":  229738,
+                       "packedBytes":  202145,
+                       "gzipBytes":  202145,
+                       "savingPercent":  12,
+                       "compression":  "gzip"
+                   },
+                   {
+                       "label":  "SFace INT8",
+                       "rawBytes":  9896933,
+                       "packedBytes":  7082095,
+                       "gzipBytes":  7082095,
+                       "savingPercent":  28.4,
+                       "compression":  "gzip"
+                   }
+               ]
+}

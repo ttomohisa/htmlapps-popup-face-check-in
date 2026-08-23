@@ -1,0 +1,17 @@
+<!-- Reusable compact popover menu. -->
+<div class="app-popover" data-popover-root>
+  <button type="button" data-popover-trigger aria-controls="examplePopoverPanel" aria-expanded="false">その他</button>
+  <div id="examplePopoverPanel" data-popover-panel hidden><button type="button">操作</button></div>
+</div>
+<script>
+(() => {
+  let openTrigger=null;
+  const panelFor=t=>{const id=t?.getAttribute('aria-controls');return id?document.getElementById(id):null;};
+  function close(t=openTrigger){if(!t)return;const p=panelFor(t);t.setAttribute('aria-expanded','false');if(p)p.hidden=true;if(openTrigger===t)openTrigger=null;}
+  function open(t){const p=panelFor(t);if(!p)return;if(openTrigger&&openTrigger!==t)close(openTrigger);openTrigger=t;t.setAttribute('aria-expanded','true');p.hidden=false;}
+  function toggle(t){t.getAttribute('aria-expanded')==='true'?close(t):open(t);}
+  document.addEventListener('click',e=>{const t=e.target.closest('[data-popover-trigger]');if(t){toggle(t);return;}if(openTrigger&&!e.target.closest('[data-popover-panel]'))close(openTrigger);});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&openTrigger){e.preventDefault();close(openTrigger);}});
+  window.AppPopoverMenu=Object.freeze({open,close,toggle,closeAll:()=>close(openTrigger)});
+})();
+</script>

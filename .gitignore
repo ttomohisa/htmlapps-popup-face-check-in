@@ -1,0 +1,10 @@
+assets/opencv.js
+assets/opencv_js.wasm
+assets/*.onnx
+dist/index.html
+dev.html
+
+assets/*.gz
+assets/ort*.js
+assets/ort*.mjs
+assets/ort*.wasm

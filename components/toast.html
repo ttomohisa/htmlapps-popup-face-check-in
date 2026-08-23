@@ -1,0 +1,13 @@
+<!-- Reusable toast / Undo component. API: AppToast.show({ message, actionLabel, onAction, duration, tone }) -->
+<div class="app-toast" id="appToast" role="status" aria-live="polite" aria-atomic="true" data-tone="default">
+  <span id="appToastMessage"></span><button id="appToastAction" type="button" hidden></button>
+</div>
+<script>
+(() => {
+  const root=document.getElementById('appToast'),message=document.getElementById('appToastMessage'),action=document.getElementById('appToastAction');let timer=0,handler=null;
+  function dismiss(){clearTimeout(timer);root?.classList.remove('show');handler=null;}
+  function show({message:text='',actionLabel='',onAction=null,duration=3200,tone='default'}={}){if(!root)return;clearTimeout(timer);message.textContent=String(text);root.dataset.tone=tone;handler=typeof onAction==='function'?onAction:null;action.textContent=actionLabel;action.hidden=!handler||!actionLabel;root.classList.add('show');if(duration>0)timer=setTimeout(dismiss,duration);}
+  action?.addEventListener('click',()=>{const fn=handler;dismiss();fn?.();});
+  window.AppToast=Object.freeze({show,dismiss});
+})();
+</script>

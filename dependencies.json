@@ -1,0 +1,62 @@
+{
+  "$schema": "./schemas/dependencies.schema.json",
+  "dependencies": [
+    {
+      "id": "onnxruntime-web",
+      "package": "onnxruntime-web",
+      "version": "1.22.0",
+      "license": "MIT",
+      "homepage": "https://onnxruntime.ai/",
+      "assets": [
+        {
+          "key": "main",
+          "path": "assets/ort.wasm.min.js",
+          "mime": "text/javascript",
+          "compression": "none"
+        },
+        {
+          "key": "wasm-mjs",
+          "path": "assets/ort-wasm-simd-threaded.mjs",
+          "mime": "text/javascript",
+          "compression": "auto"
+        },
+        {
+          "key": "wasm",
+          "path": "assets/ort-wasm-simd-threaded.wasm",
+          "mime": "application/wasm",
+          "compression": "gzip"
+        }
+      ]
+    },
+    {
+      "id": "yunet",
+      "package": "opencv-zoo-yunet",
+      "version": "2026may",
+      "license": "Apache-2.0",
+      "homepage": "https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet",
+      "assets": [
+        {
+          "key": "model",
+          "path": "assets/face_detection_yunet_2026may.onnx",
+          "mime": "application/octet-stream",
+          "compression": "auto"
+        }
+      ]
+    },
+    {
+      "id": "sface-int8",
+      "package": "opencv-zoo-sface",
+      "version": "2021dec-int8",
+      "license": "Apache-2.0",
+      "homepage": "https://github.com/opencv/opencv_zoo/tree/main/models/face_recognition_sface",
+      "assets": [
+        {
+          "key": "model",
+          "path": "assets/face_recognition_sface_2021dec_int8.onnx",
+          "mime": "application/octet-stream",
+          "compression": "auto"
+        }
+      ]
+    }
+  ]
+}

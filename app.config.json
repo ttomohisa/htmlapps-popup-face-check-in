@@ -1,0 +1,26 @@
+{
+  "$schema": "./schemas/app-config.schema.json",
+  "name": "Pop-up Face Check-in",
+  "nameJa": "Pop-up Face Check-in",
+  "slug": "popup-face-check-in",
+  "version": "1.0.0",
+  "description": "A temporary, local-first face-matching check-in tool for events and gatherings.",
+  "descriptionJa": "イベントや集まりの受付で一時的に使う、端末内完結の顔照合ツールです。",
+  "defaultLanguage": "auto",
+  "repository": {
+    "owner": "ttomohisa",
+    "name": "htmlapps-popup-face-check-in"
+  },
+  "build": {
+    "output": "dist/index.html",
+    "blockRuntimeNetwork": true,
+    "selfExtract": {
+      "enabled": false,
+      "output": "dist/index.self-extract.html"
+    },
+    "sizeBudget": {
+      "readableWarningMb": 18,
+      "selfExtractWarningMb": 12
+    }
+  }
+}

@@ -1,0 +1,21 @@
+<!-- Preset + custom numeric setting field. -->
+<div class="app-setting-field" data-setting-field>
+  <button type="button" data-setting-preset="0">Preset</button>
+  <button type="button" data-setting-custom-trigger>Custom</button>
+  <div data-setting-custom hidden>
+    <input data-setting-input type="number" min="0" max="100">
+    <span data-setting-range>0–100</span>
+  </div>
+</div>
+<script>
+(() => {
+  function init(root){
+    const custom=root.querySelector('[data-setting-custom]'),input=root.querySelector('[data-setting-input]'),trigger=root.querySelector('[data-setting-custom-trigger]');
+    trigger?.addEventListener('click',()=>{custom.hidden=false;input?.focus();});
+    root.querySelectorAll('[data-setting-preset]').forEach(b=>b.addEventListener('click',()=>root.dispatchEvent(new CustomEvent('settingchange',{bubbles:true,detail:{value:Number(b.dataset.settingPreset),source:'preset'}}))));
+    input?.addEventListener('change',()=>root.dispatchEvent(new CustomEvent('settingchange',{bubbles:true,detail:{value:Number(input.value),source:'custom'}})));
+    return Object.freeze({getValue:()=>Number(input?.value)});
+  }
+  window.AppSettingField=Object.freeze({init,initAll:()=>[...document.querySelectorAll('[data-setting-field]')].map(init)});
+})();
+</script>
