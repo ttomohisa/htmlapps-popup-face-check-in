@@ -113,3 +113,8 @@
 - Match OpenCV FaceDetectorYN preprocessing: preserve source resolution and pad only right/bottom to multiples of 32.
 - Match OpenCV score calculation: `sqrt(clamp(cls) * clamp(obj))` with the existing 0.9 threshold.
 - Use BGR 0-255 for YuNet and RGB 0-255 for SFace, matching the OpenCV wrappers.
+
+### Registration rendering safety
+- Escape imported person IDs and stored event IDs in card, history and manual reception attributes without changing identifier values.
+- Add dependency-free rendering regression tests and run them in pull request validation.
+- Save the existing Japanese PowerShell check as UTF-8 with BOM for Windows PowerShell 5.1 compatibility.

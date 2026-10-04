@@ -13,3 +13,5 @@ Please report security issues through GitHub. Do not attach real face images or 
 - Original registration photos and camera frames are not stored by the app.
 - Encrypted `.popupface` files may contain identifiable face-matching data; protect and delete them when no longer needed.
 - This tool is not intended for high-assurance identity verification or security access control.
+
+Imported registration identifiers and stored event identifiers are escaped at HTML attribute boundaries in cards, history and manual reception. Their original values remain unchanged for local actions. Run `node --test tests/registration-rendering.test.cjs` to verify this boundary.
