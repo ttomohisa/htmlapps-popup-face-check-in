@@ -3,8 +3,8 @@ const vm = require('node:vm');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
-const source = fs.readFileSync(path.join(__dirname, '../src/index.template.html'), 'utf8');
-const functions = ['escapeHtml', 'cardHtml', 'renderHistory', 'renderManualReceptionResults'].map(name => {
+const source = fs.readFileSync(process.env.APP_HTML || path.join(__dirname, '../src/index.template.html'), 'utf8');
+const functions = ['filteredHistoryRows', 'escapeHtml', 'cardHtml', 'renderHistory', 'renderManualReceptionResults'].map(name => {
   const line = source.split(/\r?\n/).find(line => line.startsWith(`function ${name}(`));
   assert.ok(line, `source function ${name}`);
   return line;
@@ -16,7 +16,7 @@ function render(id, eventId, entryExit, checked) {
     if (!elements.has(key)) elements.set(key, { value: '', innerHTML: '', querySelectorAll: () => [] });
     return elements.get(key);
   };
-  const context = vm.createContext({ $, people: [person], document: { querySelectorAll: () => [] },
+  const context = vm.createContext({ $, people: [person], historyQuery: '', historyMethod: 'all', document: { querySelectorAll: () => [] },
     thumbnailUrl: () => 'blob:synthetic-thumbnail', embeddingModelOf: () => 'model', EMBEDDING_MODEL: 'model',
     embeddingCount: () => 2, MAX_EMBEDDINGS: 3, isEntryExit: () => entryExit, isInside: () => checked,
     checkinMethodOf: () => 'manual', checkEventsOf: () => [{ id: eventId }],

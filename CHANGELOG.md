@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Add history name search, All / Manual / Face matching filters, a shown/total count, and a clear-filter action in Japanese and English. Filters are display-only; session totals, recent activity, and CSV/JSON exports continue to use all history.
+- Label history exports explicitly as full-history exports and reset filters when a session is cleared or replaced.
+- Ignore overlapping manual actions for the same person while their save is pending, preventing an unintended immediate entry/exit pair. Sequential entry/exit and independent people remain available.
+- Add synthetic-only regressions for filtering, full export privacy, manual concurrency, Undo, and session reset behavior.
+
 ### Rename to Pop-up Face Check-in
 
 ### Fixed

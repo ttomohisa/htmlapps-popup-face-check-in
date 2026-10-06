@@ -15,8 +15,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-      - name: Test registration rendering
-        run: node --test tests/registration-rendering.test.cjs
+      - name: Test history and registration behavior
+        run: node --test tests/*.test.cjs
       - name: Download pinned runtime and models
         shell: pwsh
         run: ./scripts/setup-assets.ps1
