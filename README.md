@@ -62,8 +62,8 @@ Then open the local URL printed by the script. `localhost` is treated as a secur
 3. Register participant photos. One person can have up to three matching samples; original registration photos are not retained by the app after processing.
 4. Open Reception mode and start the camera. The app confirms the same person twice before automatic face-based check-in.
 5. If matching does not work well, search the registered-person list and check the person in manually without leaving the reception workflow.
-6. Review recent activity and history. Check-in or entry/exit records can be cancelled after confirmation, with Undo immediately afterward.
-7. Export attendance history as CSV or JSON when needed. These exports do not include face thumbnails or face-matching data.
+6. Review recent activity and history. Search history by name, filter by All / Manual / Face matching, and check the shown/total count. Check-in or entry/exit records can be cancelled after confirmation, with Undo immediately afterward.
+7. Export all attendance history as CSV or JSON when needed. History filters affect only the displayed list; both exports always include every record in the session. These exports do not include face thumbnails or face-matching data.
 8. When the event is finished, use **Delete all face data** and remove any exported `.popupface` file you no longer need.
 
 ### Check-in and Entry / Exit modes
@@ -71,6 +71,8 @@ Then open the local URL printed by the script. `localhost` is treated as a secur
 **Check-in** stores the first attendance time for each person and does not overwrite it on later matches.
 
 **Entry / Exit** records repeated entry, exit, and re-entry events in chronological order. After recording a person, automatic matching for that same person is temporarily locked until their face leaves the camera view, preventing an immediate entry → exit pair from one continuous appearance.
+
+Manual entry/exit ignores repeated activations for the same person while their save is pending. You can still record another person, or record a later exit after the entry finishes saving.
 
 ### Matching settings
 
