@@ -3,6 +3,7 @@
 ## 1.0.1 - 2026-10-08
 
 - Normalize header EN / JA labels and localized language/Help tooltips and accessible names.
+- Dismiss Help only on clicks outside its actual dialog bounds, preserve inside clicks, and restore its opener focus.
 - Keep the visible app version and release metadata synchronized; normalize existing Japanese local-processing badges without changing processing behavior.
 
 ## Unreleased
