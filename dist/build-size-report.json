@@ -1,42 +1,42 @@
 {
   "app": "Pop-up Face Check-in",
-  "version": "1.0.0",
-  "builtAtUtc": "2026-10-06T04:00:32.7901524Z",
+  "version": "1.0.1",
+  "builtAtUtc": "2026-10-08T03:25:58.9103539Z",
   "output": "dist/index.html",
-  "outputBytes": 13643525,
-  "outputMiB": 13.0,
+  "outputBytes": 13835640,
+  "outputMiB": 13.2,
   "runtimeNetworkBlocked": true,
   "assets": [
     {
       "label": "ORT WASM",
       "rawBytes": 11210254,
-      "packedBytes": 2920048,
-      "gzipBytes": 2920048,
-      "savingPercent": 74.0,
+      "packedBytes": 2878594,
+      "gzipBytes": 2878594,
+      "savingPercent": 74.3,
       "compression": "gzip"
     },
     {
       "label": "ORT MJS",
       "rawBytes": 20856,
-      "packedBytes": 8475,
-      "gzipBytes": 8475,
-      "savingPercent": 59.4,
+      "packedBytes": 8391,
+      "gzipBytes": 8391,
+      "savingPercent": 59.8,
       "compression": "gzip"
     },
     {
       "label": "YuNet",
       "rawBytes": 229738,
-      "packedBytes": 202045,
-      "gzipBytes": 202045,
-      "savingPercent": 12.1,
+      "packedBytes": 202145,
+      "gzipBytes": 202145,
+      "savingPercent": 12.0,
       "compression": "gzip"
     },
     {
       "label": "SFace INT8",
       "rawBytes": 9896933,
-      "packedBytes": 6897106,
-      "gzipBytes": 6897106,
-      "savingPercent": 30.3,
+      "packedBytes": 7082095,
+      "gzipBytes": 7082095,
+      "savingPercent": 28.4,
       "compression": "gzip"
     }
   ]

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1 - 2026-10-08
+
+- Normalize header EN / JA labels and localized language/Help tooltips and accessible names.
+- Dismiss Help only on clicks outside its actual dialog bounds, preserve inside clicks, and restore its opener focus.
+- Keep the visible app version and release metadata synchronized; normalize existing Japanese local-processing badges without changing processing behavior.
+
 ## Unreleased
 
 - Add history name search, All / Manual / Face matching filters, a shown/total count, and a clear-filter action in Japanese and English. Filters are display-only; session totals, recent activity, and CSV/JSON exports continue to use all history.

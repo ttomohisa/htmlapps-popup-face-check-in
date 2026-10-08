@@ -48,6 +48,10 @@ jobs:
         shell: pwsh
         run: ./scripts/check-repository.ps1
 
+      - name: Test header normalization
+        run: node ./tests/header-normalization.test.mjs src/index.template.html dist/index.html
+      - name: Test Help dismissal
+        run: node ./tests/help-dialog.test.cjs src/index.template.html dist/index.html
       - name: Check Cloudflare preview credentials
         id: cloudflare
         shell: pwsh

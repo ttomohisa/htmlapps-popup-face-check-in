@@ -79,3 +79,11 @@ Current stable Chromium / Firefox / Safari on desktop and mobile. Camera use req
 - スマホ下部バー、ヘルプ、確認ダイアログ、Undo、safe areaが機能する。
 - `assets/screenshot.png` と `assets/screenshot-mobile.png` が現在UIを表す。
 - ダークモードを追加しない。
+
+## Header normalization (1.0.1)
+
+- The language control shows EN in Japanese and JA in English, with a destination title and accessible name localized to the current UI language. Existing header Help attributes are localized.
+- Existing Japanese local-processing badges use 完全ローカル処理, with accurate English wording retained. Layout, processing boundaries, persistence, model/camera behavior, and their existing limitations are unchanged.
+
+- Help closes on a backdrop click outside its actual rectangle, keeps inside clicks open, and restores focus to its opener.
+- Known localization limit: the static Help body remains mostly Japanese in the English UI; header localization does not imply full Help-content translation.
