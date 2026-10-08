@@ -29,6 +29,8 @@ jobs:
       - name: Verify standalone HTML
         shell: pwsh
         run: ./scripts/verify-standalone.ps1
+      - name: Test header normalization
+        run: node ./tests/header-normalization.test.mjs src/index.template.html dist/index.html
       - name: Upload standalone artifact
         uses: actions/upload-artifact@v7
         with:
