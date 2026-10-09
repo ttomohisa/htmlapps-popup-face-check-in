@@ -1,9 +1,9 @@
 {
   "app": "Pop-up Face Check-in",
-  "version": "1.0.2",
-  "builtAtUtc": "2026-10-09T06:11:58.8297831Z",
+  "version": "1.0.3",
+  "builtAtUtc": "2026-10-09T07:24:10.9082973Z",
   "output": "dist/index.html",
-  "outputBytes": 13657712,
+  "outputBytes": 13658128,
   "outputMiB": 13.0,
   "runtimeNetworkBlocked": true,
   "assets": [

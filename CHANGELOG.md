@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.3 - 2026-10-09
+
+- Translate the header subtitle and initialization status in English mode.
+- Keep the current loading, ready timing, or startup-error status when switching Japanese / English without restarting initialization.
+- Add regression coverage for both languages and startup states.
+
 ## 1.0.2 - 2026-10-09
 
 - Add a real English-mode catalog screenshot and use it in the English README, documenting the existing untranslated subtitle/status text and preserving app behavior and the supplied icon.
