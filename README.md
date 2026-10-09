@@ -16,7 +16,9 @@ A privacy-focused, single-HTML face-matching check-in app for temporary events a
 
 GitHub Pages delivers the initial HTML. After it loads, face detection, feature extraction, matching, registration, history, and export are processed locally on your device. Runtime/model assets are embedded in the generated standalone HTML.
 
-[![Pop-up Face Check-in screenshot](assets/screenshot.png)](https://ttomohisa.github.io/htmlapps-popup-face-check-in/)
+[![Pop-up Face Check-in registration screen with English controls](assets/screenshot-en.png)](https://ttomohisa.github.io/htmlapps-popup-face-check-in/)
+
+The screenshot shows English mode before a session starts, with no registered people. The static subtitle and initialization status retain their existing Japanese text.
 
 ## Features
 

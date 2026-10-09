@@ -2,7 +2,7 @@
 
 ## 1.0.2 - 2026-10-09
 
-- Prepare the maintenance build for an English catalog screenshot, preserving app behavior and the supplied icon.
+- Add a real English-mode catalog screenshot and use it in the English README, documenting the existing untranslated subtitle/status text and preserving app behavior and the supplied icon.
 - Read the size-report version from app metadata and verify it during the existing built-header checks.
 - Retry transient model-download HTTP 502/504 errors and timeouts at build time with bounded backoff; keep pinned URLs, sizes, and SHA-256 validation unchanged.
 
