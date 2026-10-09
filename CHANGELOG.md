@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2 - 2026-10-09
+
+- Prepare the maintenance build for an English catalog screenshot, preserving app behavior and the supplied icon.
+- Read the size-report version from app metadata and verify it during the existing built-header checks.
+
 ## 1.0.1 - 2026-10-08
 
 - Normalize header EN / JA labels and localized language/Help tooltips and accessible names.
