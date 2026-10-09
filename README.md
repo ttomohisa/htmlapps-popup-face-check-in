@@ -18,7 +18,7 @@ GitHub Pages delivers the initial HTML. After it loads, face detection, feature 
 
 [![Pop-up Face Check-in registration screen with English controls](assets/screenshot-en.png)](https://ttomohisa.github.io/htmlapps-popup-face-check-in/)
 
-The screenshot shows English mode before a session starts, with no registered people. The static subtitle and initialization status retain their existing Japanese text.
+The screenshot shows English mode before a session starts, with no registered people. The static subtitle and initialization status retain their existing Japanese text. The [Japanese screenshot](assets/screenshot.png) is also available.
 
 ## Features
 
