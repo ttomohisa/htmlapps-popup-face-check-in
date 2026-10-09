@@ -28,3 +28,10 @@ test('brand asset, embedded favicon and header keep canonical color and exact 25
     background(header.match(/<svg\b[\s\S]*?<\/svg>/)[0], file + ': header');
   }
 });
+
+test('brand regression runs separately from Node-free PowerShell checks in every workflow', () => {
+  assert.doesNotMatch(read('scripts/check-repository.ps1'), /(?:^|\n)\s*&?\s*node\b/i);
+  for (const name of ['build-standalone.yml', 'deploy-pages.yml', 'preview.yml']) {
+    assert.match(read('.github/workflows/' + name), /run: node --test \.\/tests\/icon-brand\.test\.cjs/);
+  }
+});
