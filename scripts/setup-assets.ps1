@@ -35,6 +35,37 @@ function Download-Asset([string]$Name,[string]$Uri) {
   return $path
 }
 
+# Retry only transient transport failures. Size/hash validation remains outside this loop.
+function Test-TransientModelDownloadError($Failure) {
+  $exception = $Failure.Exception
+  while ($null -ne $exception) {
+    if ($exception -is [System.TimeoutException]) { return $true }
+    if ($exception -is [System.Net.WebException] -and $exception.Status -eq [System.Net.WebExceptionStatus]::Timeout) { return $true }
+    $responseProperty = $exception.PSObject.Properties['Response']
+    if ($null -ne $responseProperty -and $null -ne $responseProperty.Value) {
+      $statusProperty = $responseProperty.Value.PSObject.Properties['StatusCode']
+      if ($null -ne $statusProperty -and @([int]502, [int]504) -contains [int]$statusProperty.Value) { return $true }
+    }
+    $exception = $exception.InnerException
+  }
+  return $false
+}
+
+function Invoke-ModelDownload([string]$Uri, [string]$Path) {
+  for ($attempt = 1; $attempt -le 3; $attempt++) {
+    try {
+      Invoke-WebRequest -Uri $Uri -OutFile $Path
+      return
+    } catch {
+      if (Test-Path -LiteralPath $Path) { Remove-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue }
+      if ($attempt -ge 3 -or -not (Test-TransientModelDownloadError $_)) { throw }
+      $delay = 2 * $attempt
+      Write-Warning "Transient model download failure; retrying in $delay seconds (attempt $($attempt + 1)/3)."
+      Start-Sleep -Seconds $delay
+    }
+  }
+}
+
 function Download-VerifiedAsset([string]$Name,[string]$Uri,[long]$Size,[string]$Sha256) {
   $path = Join-Path $Assets $Name
   $ok = $false
@@ -46,7 +77,7 @@ function Download-VerifiedAsset([string]$Name,[string]$Uri,[long]$Size,[string]$
   if (-not $ok) {
     if (Test-Path $path) { Remove-Item $path -Force }
     Write-Host "Downloading $Name..."
-    Invoke-WebRequest -Uri $Uri -OutFile $path
+    Invoke-ModelDownload -Uri $Uri -Path $path
     $actualSize = (Get-Item $path).Length
     $actualHash = Get-Sha256Hex $path
     if ($actualSize -ne $Size -or $actualHash -ne $Sha256) {

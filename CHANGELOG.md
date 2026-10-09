@@ -4,6 +4,7 @@
 
 - Prepare the maintenance build for an English catalog screenshot, preserving app behavior and the supplied icon.
 - Read the size-report version from app metadata and verify it during the existing built-header checks.
+- Retry transient model-download HTTP 502/504 errors and timeouts at build time with bounded backoff; keep pinned URLs, sizes, and SHA-256 validation unchanged.
 
 ## 1.0.1 - 2026-10-08
 
