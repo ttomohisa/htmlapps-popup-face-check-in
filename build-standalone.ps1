@@ -176,7 +176,7 @@ foreach ($info in @($ortWasmInfo,$ortMjsInfo,$yunetInfo,$sfaceInfo)) {
 }
 $report = [PSCustomObject]@{
   app = 'Pop-up Face Check-in'
-  version = '1.0.1'
+  version = [string]((Get-Content -Raw -Encoding UTF8 (Join-Path $Root 'app.config.json') | ConvertFrom-Json).version)
   builtAtUtc = [DateTime]::UtcNow.ToString('o')
   output = 'dist/index.html'
   outputBytes = [int64]$outBytes

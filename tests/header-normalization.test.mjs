@@ -121,3 +121,10 @@ for (const target of targets) {
     }
   });
 }
+
+if (targets.some(target => !target.startsWith('src/'))) {
+  test('generated size report identifies the current app version', () => {
+    const report = JSON.parse(fs.readFileSync(path.join(root, 'dist/build-size-report.json'), 'utf8'));
+    assert.equal(report.version, config.version);
+  });
+}
