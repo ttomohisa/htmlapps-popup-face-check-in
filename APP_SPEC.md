@@ -88,7 +88,11 @@ Current stable Chromium / Firefox / Safari on desktop and mobile. Camera use req
 - Help closes on a backdrop click outside its actual rectangle, keeps inside clicks open, and restores focus to its opener.
 - Known localization limit: the static Help body remains mostly Japanese in the English UI; header localization does not imply full Help-content translation.
 
-## Startup localization (1.0.3)
+## Startup localization (1.0.4)
 
 - The header subtitle and current initialization status follow the selected Japanese / English language without reloading.
 - Language switches preserve the current loading phase, ready elapsed time, and startup error detail/state. Model initialization, camera access, sessions and data handling are unchanged.
+
+## Brand icon consistency
+
+- Brand backgrounds use #16624f with corner radii equal to exactly 25% of each background axis. Preserve foreground artwork, placement, and existing canvas padding across SVG assets, app headers, and embedded favicons.

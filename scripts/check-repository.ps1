@@ -19,3 +19,6 @@ if(-not $SkipBuild){
   else{Write-Warning 'Runtime/model assets are not present. Run setup-assets.bat before build verification.'}
 }
 Write-Host '[OK] htmlapps-template repository alignment check passed.' -ForegroundColor Green
+
+& node --test (Join-Path $Root "tests/icon-brand.test.cjs")
+if ($LASTEXITCODE -ne 0) { throw "Brand icon regression failed." }
