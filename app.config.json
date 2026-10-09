@@ -3,7 +3,7 @@
   "name": "Pop-up Face Check-in",
   "nameJa": "Pop-up Face Check-in",
   "slug": "popup-face-check-in",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A temporary, local-first face-matching check-in tool for events and gatherings.",
   "descriptionJa": "イベントや集まりの受付で一時的に使う、端末内完結の顔照合ツールです。",
   "defaultLanguage": "auto",

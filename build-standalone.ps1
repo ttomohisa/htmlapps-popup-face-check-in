@@ -189,3 +189,6 @@ $reportPath = Join-Path $Dist 'build-size-report.json'
 
 Write-Host "Built: dist\index.html ($outMiB MB)"
 Write-Host "Report: dist\build-size-report.json"
+
+# Keep the directly downloadable release identical to the generated standalone file.
+Copy-Item -LiteralPath $out -Destination (Join-Path $Root 'popup-face-check-in.html') -Force
