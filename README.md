@@ -59,7 +59,7 @@ Then open the local URL printed by the script. `localhost` is treated as a secur
 
 ## Usage
 
-The background does not scroll while a dialog is open. Dismiss Help with Close, Esc, or a click outside it.
+Dismiss Help with Close, Esc, or a click outside it.
 
 1. Start a session and choose **Check-in** or **Entry / Exit**.
 2. Choose how long data should remain: **Today only**, **Until the browser closes**, or **Delete manually**.
