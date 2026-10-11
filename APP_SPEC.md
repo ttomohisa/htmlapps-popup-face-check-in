@@ -97,3 +97,8 @@ Current stable Chromium / Firefox / Safari on desktop and mobile. Camera use req
 
 - Brand backgrounds use #16624f with corner radii equal to exactly 25% of each background axis. Preserve foreground artwork, placement, and existing canvas padding across SVG assets, app headers, and embedded favicons.
 - The supplied 64 x 64 SVG is the canonical header and favicon artwork. Keep assets/favicon.svg byte-for-byte unchanged and embed the complete SVG in every generated release, preserving the existing header footprint.
+
+## Modal scrolling (1.0.6)
+
+- Lock page-root scrolling only while a native modal dialog is open; preserve all existing dialog sizes, internal scrolling and close behavior.
+- Keep the existing local-processing badge wording and use a decorative shield. Help explains the background lock and Help dismissal in Japanese and English.

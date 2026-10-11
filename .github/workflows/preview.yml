@@ -48,6 +48,8 @@ jobs:
         shell: pwsh
         run: ./scripts/check-repository.ps1
 
+      - name: Test source and release regressions
+        run: node ./scripts/test-regressions.cjs
       - name: Test icon brand normalization
         run: node --test ./tests/icon-brand.test.cjs
       - name: Test header normalization

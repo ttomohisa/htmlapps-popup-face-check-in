@@ -59,6 +59,8 @@ Then open the local URL printed by the script. `localhost` is treated as a secur
 
 ## Usage
 
+The background does not scroll while a dialog is open. Dismiss Help with Close, Esc, or a click outside it.
+
 1. Start a session and choose **Check-in** or **Entry / Exit**.
 2. Choose how long data should remain: **Today only**, **Until the browser closes**, or **Delete manually**.
 3. Register participant photos. One person can have up to three matching samples; original registration photos are not retained by the app after processing.
@@ -211,3 +213,7 @@ Bug reports and feature proposals are welcome through GitHub Issues. See [CONTRI
 Copyright © 2026 ttomohisa
 
 Licensed under the [MIT License](LICENSE).
+
+### Regression validation
+
+Use Node.js 22 or later and PowerShell for repository validation. After building both `dist/index.html` and `popup-face-check-in.html`, run `node scripts/test-regressions.cjs`. The gate runs all source tests and the application regressions against both release copies, failing on any test or missing prerequisite. `--source-only` runs the complete source suite without rebuilding. The standalone build remains Node-free. Native scrolling, touch, focus and camera checks still require a real browser.
