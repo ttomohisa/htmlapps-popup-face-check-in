@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.6 - 2026-10-11
+
+- Prevent background-page scrolling while a native modal is open, preserving existing dialog geometry and close behavior.
+- Use a shield for the existing local-processing badge and add Japanese / English Help guidance.
+- Add source and generated-artifact modal regressions to the canonical validation path.
+
 ## 1.0.5 - 2026-10-09
 
 - Replace the header icon and embedded favicon with the supplied canonical SVG artwork, preserving its #16624f background and exact 25% corner radius.

@@ -21,6 +21,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
       - name: Download pinned runtime and models
         shell: pwsh
         run: ./scripts/setup-assets.ps1
@@ -33,6 +37,8 @@ jobs:
       - name: Verify standalone HTML
         shell: pwsh
         run: ./scripts/verify-standalone.ps1
+      - name: Test source and release regressions
+        run: node ./scripts/test-regressions.cjs
       - name: Test icon brand normalization
         run: node --test ./tests/icon-brand.test.cjs
       - name: Test header normalization

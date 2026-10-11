@@ -55,6 +55,8 @@ start-local.bat
 
 ## 使い方
 
+ダイアログを開いている間は背景がスクロールしません。使い方は「閉じる」、Escキー、外側のクリックで閉じられます。
+
 1. セッション開始時に **「受付」または「入退場」** を選びます。
 2. 保存期間を **「今日だけ / ブラウザを閉じるまで / 手動で削除」** から選びます。
 3. 参加者の顔写真を登録します。1人につき最大3件の照合用データを持てます。登録元画像は処理後に保持しません。
@@ -205,3 +207,7 @@ ONNX Runtime Web / WASM / YuNet / SFaceを `dist/index.html` に内包します�
 Copyright © 2026 ttomohisa
 
 [MIT License](LICENSE) で公開しています。
+
+### モーダル表示の回帰確認
+
+リポジトリ検証にはNode.js 22以降とPowerShellを使います。`dist/index.html` と `popup-face-check-in.html` を生成後、`node scripts/test-regressions.cjs` で全ソーステストと両配布HTMLのアプリ回帰テストを実行します。失敗や必須ツールの不足はエラーになります。`--source-only` は再ビルドせず全ソーステストを実行します。単一HTMLのビルド自体にNode.jsは不要です。実際のスクロール・タッチ・フォーカス・カメラはブラウザーで別途確認します。
