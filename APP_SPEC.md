@@ -101,4 +101,10 @@ Current stable Chromium / Firefox / Safari on desktop and mobile. Camera use req
 ## Modal scrolling (1.0.6)
 
 - Lock page-root scrolling only while a native modal dialog is open; preserve all existing dialog sizes, internal scrolling and close behavior.
-- Keep the existing local-processing badge wording and use a decorative shield. Help explains dismissal in Japanese and English without implementation commentary.
+- Keep the local-processing badge accurate and use a decorative shield; its equivalent English label follows the canonical wording documented below. Help explains dismissal in Japanese and English without implementation commentary.
+
+## Informational footer and Help metadata
+
+- Hide only the informational footer at the existing 640px phone breakpoint; preserve functional bottom controls and existing badge visibility.
+- The equivalent English local-processing badge reads `Fully local processing`.
+- Startup diagnostics, model/camera behavior, retention and biometric-data safeguards are unchanged.

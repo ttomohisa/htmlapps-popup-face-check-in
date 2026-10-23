@@ -108,7 +108,7 @@ for (const target of targets) {
 
   test(`${target}: existing local-processing badge copy stays truthful and bilingual`, () => {
     if (video || popup) {
-      const english = video ? ['Video stays on this device', 'Local processing'] : ['On-device only'];
+      const english = video ? ['Video stays on this device', 'Local processing'] : ['Fully local processing'];
       for (const text of english) {
         const match = html.match(new RegExp(`<[^>]+data-en="${text}"[^>]*>([^<]+)`));
         assert.ok(match, 'existing English badge is preserved');
