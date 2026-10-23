@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Standardize the phone informational footer and English local-processing label.
+
 ## 1.0.6 - 2026-10-11
 
 - Prevent background-page scrolling while a native modal is open, preserving existing dialog geometry and close behavior.
