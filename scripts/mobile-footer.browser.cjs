@@ -33,7 +33,7 @@ if(cfg.slug==='popup-face-check-in'){await page.locator('#sessionDialog').waitFo
 if(await page.locator('html').getAttribute('lang')!==language)await page.locator(cfg.lang).click();
 await assertHeaderVersionFits(page, width, height, label);
 if(file==='dist/index.html'&&[1360,320,360,390].includes(width))await page.screenshot({path:path.join(evidence,`main-${language}-${width}.png`)});
-assert.equal(await page.locator('#helpBtn').getAttribute('aria-label'),language==='ja'?'使い方と注意事項':'How to use & notes',label+': Help accessible name');
+assert.equal(await page.locator('#helpBtn').getAttribute('aria-label'),language==='ja'?'使い方と注意事項':'How to use and precautions',label+': Help accessible name');
 const helpSymbol=await page.locator('#helpBtn use').getAttribute('href');
 assert.match(await page.locator(helpSymbol+' path').first().getAttribute('d'),/a2\.35/,label+': question hook');
 const helpDot=page.locator(helpSymbol+' circle[cy="17"]');assert.equal(await helpDot.count(),1,label+': bottom dot');assert.equal(await helpDot.getAttribute('fill'),'currentColor');assert.ok(Number(await helpDot.getAttribute('r'))>=.8,label+': visible dot radius');
