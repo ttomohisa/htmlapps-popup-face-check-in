@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Verify the complete current header version at narrow phone widths; reserve space for the version beside truncated app titles.
+
+- 1.0.7: Use a question-mark Help icon with a clearly visible bottom dot while preserving localized accessible names and Help behavior.
+
 - Standardize the phone informational footer and English local-processing label.
 
 ## 1.0.6 - 2026-10-11
