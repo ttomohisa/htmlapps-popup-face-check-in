@@ -2,13 +2,41 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{pathToFileURL}=require('node:url'),{chromium}=require('playwright');
 const cfg={"slug": "popup-face-check-in", "bp": 640, "footer": "body > .app-footer", "badge": "[data-ja=\"\u5b8c\u5168\u30ed\u30fc\u30ab\u30eb\u51e6\u7406\"]", "nav": "#appMobileBottomBar", "open": "#helpBtn", "lang": "#langBtn", "head": ".dialog-head", "end": "#helpDialogScroll"};
+
+async function assertHeaderVersionFits(page, width, height, label) {
+  const expected = 'v' + JSON.parse(fs.readFileSync(path.resolve('app.config.json'), 'utf8')).version;
+  const version = page.locator('.app-header .version-badge, .app-header .version');
+  assert.equal(await version.count(), 1, label + ': one header version');
+  assert.equal((await version.textContent()).trim(), expected, label + ': current version');
+  assert.equal(await version.isVisible(), true, label + ': header version visible');
+  const box = await version.evaluate(el => {
+    const range = document.createRange(); range.selectNodeContents(el); const r = range.getBoundingClientRect();
+    let left = 0, right = innerWidth, top = 0, bottom = innerHeight;
+    for (let p = el; p; p = p.parentElement) {
+      const style = getComputedStyle(p), b = p.getBoundingClientRect();
+      if (/hidden|clip|auto|scroll/.test(style.overflowX)) { left = Math.max(left, b.left); right = Math.min(right, b.right); }
+      if (/hidden|clip|auto|scroll/.test(style.overflowY)) { top = Math.max(top, b.top); bottom = Math.min(bottom, b.bottom); }
+    }
+    const actions = document.querySelector('.header-actions').getBoundingClientRect();
+    return { x:r.left, y:r.top, right:r.right, bottom:r.bottom, width:r.width, height:r.height, left, clipRight:right, top, clipBottom:bottom,
+      overlapsActions: r.left < actions.right && r.right > actions.left && r.top < actions.bottom && r.bottom > actions.top };
+  });
+  assert.ok(box.width > 0 && box.height > 0 && box.x >= box.left - .5 && box.right <= box.clipRight + .5 && box.y >= box.top - .5 && box.bottom <= box.clipBottom + .5 && !box.overlapsActions, label + ': full version glyphs fit viewport/ancestor clips without action overlap ' + JSON.stringify(box));
+}
+
 async function main(){const evidence=path.resolve('test-results/mobile-footer');fs.mkdirSync(evidence,{recursive:true});const browser=await chromium.launch();
-try{const cases=[];for(const language of ['ja','en'])for(const [width,height]of [[1360,900],[cfg.bp+1,568],[cfg.bp,568],[601,568],[600,568],[320,568],[393,252]])cases.push({file:'dist/index.html',language,width,height});cases.push({file:cfg.slug+'.html',language:'en',width:360,height:640});if(cfg.slug!=='popup-face-check-in')cases.push({file:'dist/index.self-extract.html',language:'ja',width:360,height:640});
+try{const cases=[];for(const language of ['ja','en'])for(const [width,height]of [[1360,900],[cfg.bp+1,568],[cfg.bp,568],[601,568],[600,568],[320,568],[360,640],[390,844],[393,252]])cases.push({file:'dist/index.html',language,width,height});cases.push({file:cfg.slug+'.html',language:'en',width:360,height:640});if(cfg.slug!=='popup-face-check-in')cases.push({file:'dist/index.self-extract.html',language:'ja',width:360,height:640});
 for(const {file,language,width,height}of cases){const context=await browser.newContext({viewport:{width,height},locale:language,reducedMotion:'reduce'}),page=await context.newPage(),errors=[],modelWarnings=[],requests=[],label=`${file} ${language} ${width}x${height}`;
 page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'){const text=m.text().replace(/\x1b\[[0-9;]*m/g,'');if(/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d\.\d+ \[W:onnxruntime:, graph\.cc:1362 Graph\] Initializer [A-Za-z0-9_]+ appears in graph inputs and will not be treated as constant value\/weight\. This may prevent some of the graph optimizations, like const folding\. Move it out of graph inputs if there is no need to override it, by either re-generating the model with latest exporter\/converter or with the tool onnxruntime\/tools\/python\/remove_initializer_from_input\.py\.$/.test(text))modelWarnings.push(text);else errors.push(m.text());}});page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url())});
 try{await page.goto(pathToFileURL(path.resolve(file)).href);await page.locator(cfg.open).waitFor();
 if(cfg.slug==='popup-face-check-in'){await page.locator('#sessionDialog').waitFor();await page.locator('#privacyAck').check();await page.locator('#sessionStartBtn').click();await page.locator('#sessionDialog').waitFor({state:'hidden'});await page.locator('#runtime.ready').waitFor({timeout:60000});}
 if(await page.locator('html').getAttribute('lang')!==language)await page.locator(cfg.lang).click();
+await assertHeaderVersionFits(page, width, height, label);
+if(file==='dist/index.html'&&[1360,320,360,390].includes(width))await page.screenshot({path:path.join(evidence,`main-${language}-${width}.png`)});
+assert.equal(await page.locator('#helpBtn').getAttribute('aria-label'),language==='ja'?'使い方と注意事項':'How to use & notes',label+': Help accessible name');
+const helpSymbol=await page.locator('#helpBtn use').getAttribute('href');
+assert.match(await page.locator(helpSymbol+' path').first().getAttribute('d'),/a2\.35/,label+': question hook');
+const helpDot=page.locator(helpSymbol+' circle[cy="17"]');assert.equal(await helpDot.count(),1,label+': bottom dot');assert.equal(await helpDot.getAttribute('fill'),'currentColor');assert.ok(Number(await helpDot.getAttribute('r'))>=.8,label+': visible dot radius');
 assert.equal((await page.locator(cfg.badge).textContent()).trim(),language==='en'?'Fully local processing':'完全ローカル処理',label+': canonical badge');
 if(await page.locator(cfg.badge).isVisible()){const r=await page.locator(cfg.badge).boundingBox();assert.ok(r&&r.x>=0&&r.x+r.width<=width,label+': visible badge fits');}
 assert.equal(await page.locator(cfg.footer).isVisible(),width>cfg.bp,label+': informational footer');assert.equal(await page.locator(cfg.nav).isVisible(),width<=600,label+': functional controls');if(width<=600){const r=await page.locator(cfg.nav).boundingBox();assert.ok(r&&r.x>=0&&r.x+r.width<=width&&r.y>=0&&r.y+r.height<=height,label+': functional bar fits viewport');}

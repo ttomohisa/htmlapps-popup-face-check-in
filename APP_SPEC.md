@@ -108,3 +108,9 @@ Current stable Chromium / Firefox / Safari on desktop and mobile. Camera use req
 - Hide only the informational footer at the existing 640px phone breakpoint; preserve functional bottom controls and existing badge visibility.
 - The equivalent English local-processing badge reads `Fully local processing`.
 - Startup diagnostics, model/camera behavior, retention and biometric-data safeguards are unchanged.
+
+## UI symbol consistency (v1.0.7)
+
+- Use a question-mark Help icon with a clearly visible bottom dot while preserving localized accessible names and Help behavior.
+
+- Keep the complete current header version visible at 320px, 360px and 390px; only the app title may truncate, never the version or header controls.
