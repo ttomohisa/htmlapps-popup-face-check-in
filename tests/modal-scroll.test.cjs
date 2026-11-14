@@ -116,7 +116,8 @@ test('the existing local-processing badge uses only a decorative shield', () => 
   assert.equal(badges.length, 1, 'Keep exactly the existing badge');
   const badge = badges[0][1];
   assert.match(badge, /<svg[^>]*aria-hidden="true"/);
-  assert.match(badge, /d="M12 3 4 6v5c0 5 3\.4 8\.7 8 10 4\.6-1\.3 8-5 8-10V6l-8-3Z"/);
+  assert.match(badge, /d="M12 3 5 6v5c0 4\.6 2\.8 8 7 10 4\.2-2 7-5\.4 7-10V6z"/);
+  assert.match(badge, /d="m9 12 2 2 4-5"/);
   assert.doesNotMatch(badge, /<rect\b|href="#i-lock"/, 'The old padlock is absent from this badge');
   assert.match(badge, /完全ローカル処理/);
 });
