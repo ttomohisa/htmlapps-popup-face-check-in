@@ -27,7 +27,7 @@ function harness({ mode = 'entryexit', people = [], deferred = false } = {}) {
     querySelector: selector => ({ value: selector.includes('workflow') ? mode : 'manual' }), addEventListener() {} };
   let serial = 0, stamp = 1800000000000;
   class SyntheticDate extends Date { static now() { return stamp++; } }
-  const context = vm.createContext({ document, window: { addEventListener() {} }, navigator: {}, console,
+  const context = vm.createContext({ document, window: { addEventListener() {}, scrollTo() {} }, navigator: {}, console,
     Blob, Date: SyntheticDate, crypto: { randomUUID: () => `synthetic-event-${++serial}` },
     setTimeout: () => 0, clearTimeout() {}, URL: { revokeObjectURL() {} },
     localStorage: { removeItem() {}, getItem() { return null; }, setItem() {} },

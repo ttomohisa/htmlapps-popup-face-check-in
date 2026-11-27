@@ -18,7 +18,7 @@ GitHub Pages delivers the initial HTML. After it loads, face detection, feature 
 
 [![Pop-up Face Check-in registration screen with English controls](assets/screenshot-en.png)](https://ttomohisa.github.io/htmlapps-popup-face-check-in/)
 
-The screenshot shows English mode before a session starts, with no registered people. The subtitle and initialization status follow the selected language. The [Japanese screenshot](assets/screenshot.png) is also available.
+The screenshot shows an empty roster after starting a session in English. See the [Japanese registration screen](assets/screenshot.png) and the [mobile check-in screen](assets/screenshot-mobile.png).
 
 ## Features
 
@@ -61,14 +61,14 @@ Then open the local URL printed by the script. `localhost` is treated as a secur
 
 Dismiss Help with Close, Esc, or a click outside it.
 
-1. Start a session and choose **Check-in** or **Entry / Exit**.
+1. Select Japanese or English in the setup dialog, then choose **Check-in** or **Entry / Exit**.
 2. Choose how long data should remain: **Today only**, **Until the browser closes**, or **Delete manually**.
-3. Register participant photos. One person can have up to three matching samples; original registration photos are not retained by the app after processing.
+3. Register guests by name only for manual check-in, or add a photo for face matching. A participant registered with photos can have up to three matching samples; original registration photos are not retained by the app after processing.
 4. Open Reception mode and start the camera. The app confirms the same person twice before automatic face-based check-in.
 5. If matching does not work well, search the registered-person list and check the person in manually without leaving the reception workflow.
 6. Review recent activity and history. Search history by name, filter by All / Manual / Face matching, and check the shown/total count. Check-in or entry/exit records can be cancelled after confirmation, with Undo immediately afterward.
 7. Export all attendance history as CSV or JSON when needed. History filters affect only the displayed list; both exports always include every record in the session. These exports do not include face thumbnails or face-matching data.
-8. When the event is finished, use **Delete all face data** and remove any exported `.popupface` file you no longer need.
+8. Open **History → Finish session** to review the full record count, optionally save a CSV and confirm local deletion. Remove any exported `.popupface` files you no longer need.
 
 ### Check-in and Entry / Exit modes
 
@@ -101,7 +101,7 @@ Contains names only. It does **not** include face thumbnails, matching data, or 
 
 ### Encrypted `.popupface` registration file
 
-Contains:
+Photo registrations contain the fields below. Name-only registrations omit the thumbnail and matching data. Files containing name-only guests require v1.1.0 or later to import.
 
 - Participant names
 - A small representative face thumbnail

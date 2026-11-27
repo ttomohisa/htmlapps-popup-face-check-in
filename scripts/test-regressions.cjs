@@ -16,7 +16,7 @@ function makePlan({ sourceOnly = false, env = process.env } = {}) {
   if (sourceOnly) return plan;
   const config = JSON.parse(fs.readFileSync(path.join(root, 'app.config.json'), 'utf8'));
   const artifacts = [...new Set([config.build.output, 'popup-face-check-in.html'])];
-  const runtimeTests = ['help-dialog.test.cjs', 'history-filters.test.cjs', 'manual-checkin.test.cjs', 'registration-rendering.test.cjs', 'runtime-localization.test.cjs', 'modal-scroll.test.cjs'].map(testPath);
+  const runtimeTests = ['help-dialog.test.cjs', 'history-filters.test.cjs', 'manual-checkin.test.cjs', 'registration-rendering.test.cjs', 'runtime-localization.test.cjs', 'modal-scroll.test.cjs', 'reception-workflow.test.cjs'].map(testPath);
   for (const artifact of artifacts) {
     plan.push(step(`${artifact}: application regressions`, ['--test', ...runtimeTests], artifact));
     plan.push(step(`${artifact}: header and version regressions`, [testPath('header-normalization.test.mjs'), artifact], artifact));

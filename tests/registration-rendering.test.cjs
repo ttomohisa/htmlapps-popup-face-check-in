@@ -4,7 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
 const source = fs.readFileSync(process.env.APP_HTML || path.join(__dirname, '../src/index.template.html'), 'utf8');
-const functions = ['filteredHistoryRows', 'escapeHtml', 'cardHtml', 'renderHistory', 'renderManualReceptionResults'].map(name => {
+const functions = ['isNameOnly', 'portraitHtml', 'filteredHistoryRows', 'escapeHtml', 'cardHtml', 'renderHistory', 'renderManualReceptionResults'].map(name => {
   const line = source.split(/\r?\n/).find(line => line.startsWith(`function ${name}(`));
   assert.ok(line, `source function ${name}`);
   return line;
