@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
+    paths: [app.config.json]
 
 permissions:
   contents: read
@@ -12,9 +15,14 @@ jobs:
   build:
     runs-on: windows-latest
     timeout-minutes: 20
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      changed: ${{ steps.version.outputs.changed }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: ${{ github.event_name == 'push' && '0' || '1' }}
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -39,12 +47,65 @@ jobs:
         run: node ./tests/header-normalization.test.mjs src/index.template.html dist/index.html
       - name: Test Help dismissal
         run: node ./tests/help-dialog.test.cjs src/index.template.html dist/index.html
+      - name: Package release downloads
+        run: python .github/scripts/package-release.py release-assets
+      - name: Check for a new version on main
+        id: version
+        if: github.event_name == 'push'
+        shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./app.config.json').version")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          previous=''
+          if [[ ! "$BEFORE_SHA" =~ ^0+$ ]]; then
+            previous=$(git show "${BEFORE_SHA}:app.config.json" | node -p "JSON.parse(require('fs').readFileSync(0, 'utf8')).version")
+          fi
+          if [[ "$previous" != "$version" ]]; then echo 'changed=true' >> "$GITHUB_OUTPUT"; fi
+      - name: Pass verified downloads to the publisher
+        if: steps.version.outputs.changed == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-assets-${{ github.sha }}
+          path: release-assets/
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 14
       - name: Upload standalone artifact
         uses: actions/upload-artifact@v7
         with:
           name: standalone-html-${{ github.event.pull_request.head.sha || github.sha }}
+          overwrite: true
           path: |
             dist/index.html
             dist/build-size-report.json
           if-no-files-found: error
           retention-days: 14
+  release:
+    name: Publish versioned GitHub Release
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.build.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: release-v${{ needs.build.outputs.version }}
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: release-assets-${{ github.sha }}
+          path: release-assets
+      - name: Verify downloads
+        working-directory: release-assets
+        run: sha256sum --check --strict SHA256SUMS.txt
+      - name: Create tag and publish downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node .github/scripts/publish-release.cjs release-assets
