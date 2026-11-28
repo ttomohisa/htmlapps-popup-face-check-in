@@ -102,8 +102,8 @@ Current stable Chromium / Firefox / Safari on desktop and mobile. Camera use req
 
 ## Modal scrolling (1.0.6)
 
-- Lock page-root scrolling only while a native modal dialog is open; preserve all existing dialog sizes, internal scrolling and close behavior.
-- Keep the local-processing badge accurate and use a decorative shield; its equivalent English label follows the canonical wording documented below. Help explains dismissal in Japanese and English without implementation commentary.
+- Lock page-root scrolling only while a native modal dialog is open; keep the Help header and its close control in place while the Help body scrolls.
+- Keep the local-processing badge accurate and use a decorative shield; its equivalent English label follows the canonical wording documented below.
 
 ## Informational footer and Help metadata
 

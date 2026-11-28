@@ -8,7 +8,7 @@
 
 A privacy-focused, single-HTML face-matching check-in app for temporary events and gatherings. Register participants, match faces at reception, fall back to manual check-in when needed, and remove the data when the event is over.
 
-**Use it on the spot, then remove the data when you are done.** Face matching runs locally in the browser. The app does not upload registration photos or camera frames to a server.
+Face matching runs locally in the browser. The app does not upload registration photos or camera frames to a server.
 
 ## 🚀 Live demo
 
@@ -58,8 +58,6 @@ start-local.bat
 Then open the local URL printed by the script. `localhost` is treated as a secure context by modern browsers, so camera access is available during development.
 
 ## Usage
-
-Dismiss Help with Close, Esc, or a click outside it.
 
 1. Select Japanese or English in the setup dialog, then choose **Check-in** or **Entry / Exit**.
 2. Choose how long data should remain: **Today only**, **Until the browser closes**, or **Delete manually**.

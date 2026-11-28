@@ -2,6 +2,8 @@
 
 ## 1.1.0
 
+- Shorten the introduction and Help copy, keep the Help heading visible while reading, and group history exports by format. Update the registration and photo-drop icons.
+
 - Choose Japanese or English during setup. Register guests by name only and use manual reception even when the camera or matching engine is unavailable.
 - Put camera and manual actions before the phone preview. Finish a session from History with optional CSV export and separate deletion confirmation.
 - Preserve version 1 photo-only registration files and support encrypted version 2 rosters with name-only guests.

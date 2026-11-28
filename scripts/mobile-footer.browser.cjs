@@ -1,7 +1,7 @@
 // Focused layout regression. No real user data, face images, camera, PiP or notification access.
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{pathToFileURL}=require('node:url'),{chromium}=require('playwright');
-const cfg={"slug": "popup-face-check-in", "bp": 640, "footer": "body > .app-footer", "badge": "[data-ja=\"\u5b8c\u5168\u30ed\u30fc\u30ab\u30eb\u51e6\u7406\"]", "nav": "#appMobileBottomBar", "open": "#helpBtn", "lang": "#langBtn", "head": ".dialog-head", "end": "#helpDialogScroll"};
+const cfg={"slug": "popup-face-check-in", "bp": 640, "footer": "body > .app-footer", "badge": "[data-ja=\"\u5b8c\u5168\u30ed\u30fc\u30ab\u30eb\u51e6\u7406\"]", "nav": "#appMobileBottomBar", "open": "#helpBtn", "lang": "#langBtn", "head": ".dialog-head", "end": "#helpDialog .dialog-body > :last-child"};
 
 async function assertHeaderVersionFits(page, width, height, label) {
   const expected = 'v' + JSON.parse(fs.readFileSync(path.resolve('app.config.json'), 'utf8')).version;
@@ -24,7 +24,7 @@ async function assertHeaderVersionFits(page, width, height, label) {
   assert.ok(box.width > 0 && box.height > 0 && box.x >= box.left - .5 && box.right <= box.clipRight + .5 && box.y >= box.top - .5 && box.bottom <= box.clipBottom + .5 && !box.overlapsActions, label + ': full version glyphs fit viewport/ancestor clips without action overlap ' + JSON.stringify(box));
 }
 
-async function main(){const evidence=path.resolve('test-results/mobile-footer');fs.mkdirSync(evidence,{recursive:true});const browser=await chromium.launch();
+async function main(){const evidence=path.resolve(process.env.BROWSER_EVIDENCE_DIR || 'test-results/mobile-footer');fs.mkdirSync(evidence,{recursive:true});const browser=await chromium.launch({channel:process.env.PLAYWRIGHT_CHANNEL || undefined});
 try{const cases=[];for(const language of ['ja','en'])for(const [width,height]of [[1360,900],[cfg.bp+1,568],[cfg.bp,568],[601,568],[600,568],[320,568],[360,640],[390,844],[393,252]])cases.push({file:'dist/index.html',language,width,height});cases.push({file:cfg.slug+'.html',language:'en',width:360,height:640});if(cfg.slug!=='popup-face-check-in')cases.push({file:'dist/index.self-extract.html',language:'ja',width:360,height:640});
 for(const {file,language,width,height}of cases){const context=await browser.newContext({viewport:{width,height},locale:language,reducedMotion:'reduce'}),page=await context.newPage(),errors=[],modelWarnings=[],requests=[],label=`${file} ${language} ${width}x${height}`;
 page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'){const text=m.text().replace(/\x1b\[[0-9;]*m/g,'');if(/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d\.\d+ \[W:onnxruntime:, graph\.cc:1362 Graph\] Initializer [A-Za-z0-9_]+ appears in graph inputs and will not be treated as constant value\/weight\. This may prevent some of the graph optimizations, like const folding\. Move it out of graph inputs if there is no need to override it, by either re-generating the model with latest exporter\/converter or with the tool onnxruntime\/tools\/python\/remove_initializer_from_input\.py\.$/.test(text))modelWarnings.push(text);else errors.push(m.text());}});page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url())});
@@ -43,7 +43,10 @@ assert.equal(await page.locator(cfg.footer).isVisible(),width>cfg.bp,label+': in
 if(cfg.slug==='text-inspector'){await page.locator('#textInput').fill('Synthetic local text.');assert.equal(await page.locator('#textInput').inputValue(),'Synthetic local text.');}
 if(cfg.slug==='pomodoro-timer'&&width<=cfg.bp){await page.locator('#mobileToggleButton').click();await page.locator('#mobileToggleButton').click();assert.match(await page.locator('#timerTime').textContent(),/\d+:\d+/);}
 assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),label+': page width');
-await page.locator(cfg.open).click();const body=page.locator('#helpDialog .dialog-body');await page.locator('#helpDialog').evaluate(e=>{e.scrollTop=e.scrollHeight});
+await page.locator(cfg.open).click();const body=page.locator('#helpDialog .dialog-body');const headerBefore=await page.locator('#helpDialog .dialog-head').boundingBox();
+await body.evaluate(e=>{e.scrollTop=e.scrollHeight});
+assert.ok(await body.evaluate(e=>e.scrollHeight<=e.clientHeight||e.scrollTop>0),label+': Help body scrolls');
+assert.deepEqual(await page.locator('#helpDialog .dialog-head').boundingBox(),headerBefore,label+': Help heading stays in place');
 if(cfg.slug==='pomodoro-timer'){assert.ok(await body.evaluate(e=>e.lastElementChild.contains(document.querySelector('#footerBuild'))));assert.match(await page.locator('#footerBuild').textContent(),/Build .*\d{4}/);assert.match(await page.locator('#footerDeps').textContent(),/Dependencies 0/);}
 if(cfg.slug==='text-inspector'){assert.equal(await page.locator('#buildInfo').count(),1);assert.match(await page.locator('#buildInfo').textContent(),/^v\d.*UTC$/);assert.ok(await body.evaluate(e=>e.lastElementChild.contains(document.querySelector('#buildInfo'))));}
 const bounds=await page.locator(cfg.end).evaluate(e=>{const walker=document.createTreeWalker(e,NodeFilter.SHOW_TEXT);let t,last;while(t=walker.nextNode())if(t.textContent.trim())last=t;const r=document.createRange();r.setStart(last,last.textContent.length-1);r.setEnd(last,last.textContent.length);const b=r.getBoundingClientRect();let top=0,bottom=innerHeight;for(let p=e.parentElement;p;p=p.parentElement)if(/auto|scroll|hidden|clip/.test(getComputedStyle(p).overflowY)){const x=p.getBoundingClientRect();top=Math.max(top,x.top);bottom=Math.min(bottom,x.bottom)}return{top:b.top,bottom:b.bottom,clipTop:top,clipBottom:bottom}});

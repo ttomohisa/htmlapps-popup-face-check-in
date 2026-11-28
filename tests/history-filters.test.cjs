@@ -117,6 +117,8 @@ test('visible accessible controls and full-export labels are present in both lan
   assert.match(source, /id="historyFilterCount"[^>]*aria-live="polite"/);
   assert.match(source, /role="group"[^>]*aria-labelledby="historyMethodLabel"/);
   for (const method of ['all', 'manual', 'face']) assert.match(source, new RegExp(`data-history-method="${method}"[^>]*aria-pressed="(?:true|false)"`));
-  assert.match(source, /data-ja="全履歴CSV" data-en="Export all CSV"/);
-  assert.match(source, /data-ja="全履歴JSON" data-en="Export all JSON"/);
+  assert.match(source, /id="historyExportLabel" data-ja="全履歴を保存" data-en="Save all history"/);
+  for (const format of ['Csv', 'Json']) {
+    assert.match(source, new RegExp('id="export' + format + 'Btn"[^>]*aria-labelledby="historyExportLabel ' + format.toLowerCase() + 'Format"'));
+  }
 });
