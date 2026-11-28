@@ -32,7 +32,7 @@
       "id": "yunet",
       "package": "opencv-zoo-yunet",
       "version": "2026may",
-      "license": "Apache-2.0",
+      "license": "MIT",
       "homepage": "https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet",
       "assets": [
         {

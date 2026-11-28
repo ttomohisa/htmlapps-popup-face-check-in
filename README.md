@@ -8,7 +8,7 @@
 
 A privacy-focused, single-HTML face-matching check-in app for temporary events and gatherings. Register participants, match faces at reception, fall back to manual check-in when needed, and remove the data when the event is over.
 
-**Use it on the spot, then remove the data when you are done.** Face matching runs locally in the browser. The app does not upload registration photos or camera frames to a server.
+Face matching runs locally in the browser. The app does not upload registration photos or camera frames to a server.
 
 ## 🚀 Live demo
 
@@ -18,7 +18,7 @@ GitHub Pages delivers the initial HTML. After it loads, face detection, feature 
 
 [![Pop-up Face Check-in registration screen with English controls](assets/screenshot-en.png)](https://ttomohisa.github.io/htmlapps-popup-face-check-in/)
 
-The screenshot shows English mode before a session starts, with no registered people. The subtitle and initialization status follow the selected language. The [Japanese screenshot](assets/screenshot.png) is also available.
+The screenshot shows the registration screen in English. See the [Japanese registration screen](assets/screenshot.png) and the [mobile check-in screen](assets/screenshot-mobile.png).
 
 ## Features
 
@@ -37,6 +37,10 @@ Open the [GitHub Pages demo](https://ttomohisa.github.io/htmlapps-popup-face-che
 
 Camera access requires a secure context. GitHub Pages uses HTTPS, so modern browsers can request camera permission normally.
 
+### Use an offline release
+
+Download the versioned `.html` file from [GitHub Releases](https://github.com/ttomohisa/htmlapps-popup-face-check-in/releases/latest) and open it in your browser. If you downloaded the distribution ZIP, extract it and open `dist/index.html`. Both contain the runtime and models. For camera use, grant permission when prompted. If your browser restricts the camera for local files, open the standalone HTML through localhost or HTTPS. Name-only registration and manual check-in work without a camera.
+
 ### Build a fully standalone HTML file
 
 1. Download or clone this repository.
@@ -49,7 +53,7 @@ Python and Node.js are not required. The setup/build scripts use Windows PowerSh
 
 ### Local development
 
-Run:
+From a source checkout, run `setup-assets.bat` once. To serve the editable source and local assets, run
 
 ```bat
 start-local.bat
@@ -59,16 +63,14 @@ Then open the local URL printed by the script. `localhost` is treated as a secur
 
 ## Usage
 
-Dismiss Help with Close, Esc, or a click outside it.
-
-1. Start a session and choose **Check-in** or **Entry / Exit**.
-2. Choose how long data should remain: **Today only**, **Until the browser closes**, or **Delete manually**.
-3. Register participant photos. One person can have up to three matching samples; original registration photos are not retained by the app after processing.
-4. Open Reception mode and start the camera. The app confirms the same person twice before automatic face-based check-in.
-5. If matching does not work well, search the registered-person list and check the person in manually without leaving the reception workflow.
+1. Select Japanese or English in the setup dialog, then choose **Check-in** or **Entry / exit**.
+2. Choose **Today only**, **Until the browser is closed**, or **Delete manually**. Review the handling precautions, select the acknowledgement, and start the session.
+3. Choose **By photo** or **By name** in Register. When adding a name that already exists, enter a group or ticket number to distinguish the guests. A participant registered with photos can have up to three matching samples; original registration photos are not retained by the app after processing.
+4. Open **Check in**. To use face matching, register at least one person by photo and start the camera. The app requires two consecutive matches before recording attendance. **Reception mode** opens a preflight check for the roster, matching engine, and camera.
+5. In manual reception, search for an attendee and record their attendance. If the name is missing, add the guest and then check them in. Choose Undo in the same dialog to correct the last record.
 6. Review recent activity and history. Search history by name, filter by All / Manual / Face matching, and check the shown/total count. Check-in or entry/exit records can be cancelled after confirmation, with Undo immediately afterward.
 7. Export all attendance history as CSV or JSON when needed. History filters affect only the displayed list; both exports always include every record in the session. These exports do not include face thumbnails or face-matching data.
-8. When the event is finished, use **Delete all face data** and remove any exported `.popupface` file you no longer need.
+8. Open **History → Finish session** to review the full record count and optionally save a CSV. **Review data to delete** opens a separate confirmation for deleting the local roster and history. The app cannot delete exported files. Remove any CSV, JSON, or `.popupface` files you no longer need.
 
 ### Check-in and Entry / Exit modes
 
@@ -80,7 +82,7 @@ Manual entry/exit ignores repeated activations for the same person while their s
 
 ### Matching settings
 
-The normal UI exposes three presets: **Easy to find**, **Standard**, and **Cautious**. Detailed similarity and margin controls are available only when needed.
+Choose **Easier match**, **Standard**, or **Stricter**. Open the advanced settings to adjust the similarity threshold and the minimum difference between the two best candidates.
 
 The default behavior uses:
 
@@ -93,7 +95,7 @@ Test with the actual cameras, lighting, and registration photos you plan to use 
 
 ## Registration data files
 
-The Registered People screen provides two different exports.
+Open **People** to see how many people are registered, how many have checked in (or are currently inside), and how many matching samples are stored. Choose **Name list → Save CSV** for the names CSV. Under **Registration file**, choose **Load** or **Save** for an encrypted roster.
 
 ### Participant list CSV
 
@@ -101,16 +103,9 @@ Contains names only. It does **not** include face thumbnails, matching data, or 
 
 ### Encrypted `.popupface` registration file
 
-Contains:
+The file carries participant names, IDs, registration times, optional group or ticket details, and model compatibility information. Each photo registration includes a small thumbnail and up to three matching samples. A photo-only roster uses file format 1. A roster containing any name-only registrations uses format 2 and requires v1.1.0 or later to import. Both formats exclude attendance history and retention settings.
 
-- Participant names
-- A small representative face thumbnail
-- Up to three face-matching data records per person
-- Format/model compatibility metadata
-
-Attendance history is intentionally excluded.
-
-The file is protected with a password using the browser's Web Crypto API. The password is not stored by the app. Import checks the file format and matching-model compatibility before adding data. When existing registration data is present, you can choose **Add** or **Replace**.
+Choose a password of at least eight characters. The app uses Web Crypto to encrypt the file and does not store the password. On import, enter the password, check the preview, and select the retention period. **Add to current registration** keeps the current history and skips matching participant IDs. **Replace current registration** replaces the roster and clears its attendance history. Export any history you need first.
 
 Because `.popupface` files contain data that can be used to identify people, treat them as sensitive files. Avoid unnecessary sharing or long-term storage, and delete them when they are no longer needed.
 
@@ -172,7 +167,7 @@ Face thumbnails and face-derived matching data can identify people and should be
 
 The app is designed so that:
 
-- Registration source photos are processed locally and not retained after registration.
+- Registration source photos are processed locally and not retained after registration. For skipped photos, the page keeps the file name and reason so you can choose replacements.
 - Additional second/third registration photos are discarded after their matching data is created.
 - Camera frames and live matching frames are not saved.
 - Face matching data is not sent to an application server.
@@ -199,7 +194,7 @@ Before using the app, confirm the purpose, necessity, consent requirements, and 
 | Component | Version | License | Purpose |
 | --- | ---: | --- | --- |
 | ONNX Runtime Web | 1.22.0 | MIT | Browser-side ONNX inference |
-| YuNet | 2026may | Apache-2.0 | Face detection and landmarks |
+| YuNet | 2026may | MIT | Face detection and landmarks |
 | SFace INT8 | 2021dec-int8 | Apache-2.0 | Face feature extraction for matching |
 
 Face alignment, YuNet post-processing, cosine matching, storage, encryption, and the application UI are implemented directly in browser JavaScript/Canvas APIs. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for details.
@@ -214,6 +209,6 @@ Copyright © 2026 ttomohisa
 
 Licensed under the [MIT License](LICENSE).
 
-### Regression validation
+## Regression validation
 
-Use Node.js 22 or later and PowerShell for repository validation. After building both `dist/index.html` and `popup-face-check-in.html`, run `node scripts/test-regressions.cjs`. The gate runs all source tests and the application regressions against both release copies, failing on any test or missing prerequisite. `--source-only` runs the complete source suite without rebuilding. The standalone build remains Node-free. Native scrolling, touch, focus and camera checks still require a real browser.
+Use Node.js 22 or later and PowerShell for repository validation. After building both `dist/index.html` and `popup-face-check-in.html`, run `node scripts/test-regressions.cjs`. The gate runs all source tests and the application regressions against both release copies, failing on any test or missing prerequisite. `--source-only` runs the complete source suite without rebuilding. The standalone build remains Node-free. Verify scrolling, touch, focus, and camera behavior in a real browser. For offline release checks, follow [VERIFY_OFFLINE.md](VERIFY_OFFLINE.md).

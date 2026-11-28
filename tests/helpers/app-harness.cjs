@@ -17,7 +17,7 @@ function element(dataset = {}) {
     querySelector() { return null; }, querySelectorAll() { return []; }, close() {}, showModal() {}, focus() {}
   };
 }
-function harness({ mode = 'entryexit', people = [], deferred = false } = {}) {
+function harness({ mode = 'entryexit', people = [], deferred = false, renderResults = false } = {}) {
   const selectors = new Map();
   const elements = new Map(), downloads = [], toasts = [], writes = [], pending = [];
   const filters = ['all', 'manual', 'face'].map(historyMethod => element({ historyMethod }));
@@ -27,7 +27,7 @@ function harness({ mode = 'entryexit', people = [], deferred = false } = {}) {
     querySelector: selector => ({ value: selector.includes('workflow') ? mode : 'manual' }), addEventListener() {} };
   let serial = 0, stamp = 1800000000000;
   class SyntheticDate extends Date { static now() { return stamp++; } }
-  const context = vm.createContext({ document, window: { addEventListener() {} }, navigator: {}, console,
+  const context = vm.createContext({ document, window: { addEventListener() {}, scrollTo() {} }, navigator: {}, console,
     Blob, Date: SyntheticDate, crypto: { randomUUID: () => `synthetic-event-${++serial}` },
     setTimeout: () => 0, clearTimeout() {}, URL: { revokeObjectURL() {} },
     localStorage: { removeItem() {}, getItem() { return null; }, setItem() {} },
@@ -43,8 +43,9 @@ function harness({ mode = 'entryexit', people = [], deferred = false } = {}) {
     putPerson=testPut; showToast=testToast; downloadFile=testDownload;
     thumbnailUrl=()=>''; renderPeople=()=>renderHistory(); renderAll=()=>renderHistory();
     scheduleSessionExpiry=()=>{}; clearPersistentPeople=async()=>{}; clearTempPeople=()=>{};
-    clearSessionMeta=()=>{sessionMeta=null}; saveSessionMeta=meta=>{sessionMeta=meta}; setResult=()=>{};
+    clearSessionMeta=()=>{sessionMeta=null}; saveSessionMeta=meta=>{sessionMeta=meta};
     replacePersistentSnapshot=async()=>{}; replaceTempSnapshot=async()=>{};`, context);
+  if (!renderResults) vm.runInContext('setResult=()=>{}', context);
   return { context, get, filters, selectors, downloads, toasts, writes,
     run: code => vm.runInContext(code, context),
     people: () => vm.runInContext('people', context),

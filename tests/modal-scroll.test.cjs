@@ -36,8 +36,8 @@ test('scanner/reception root locks remain unchanged and non-modal dialogs add no
   assert.deepEqual(existingLocks, [["body.reception-mode", "overflow-x:hidden"]], 'Preserve existing mobile/reception locks without adding [open] or unconditional locks');
 });
 
-test('all existing dialog, result and confirmation geometry remains unchanged', () => {
-  const geometry = rules.filter(rule => /dialog|\.(?:result-body|confirm-body|confirm-actions)\b/.test(rule.selector) && !rule.selector.includes(':has(dialog:modal)'))
+test('shared dialog, result and confirmation geometry stays consistent', () => {
+  const geometry = rules.filter(rule => /dialog|\.(?:result-body|confirm-body|confirm-actions)\b/.test(rule.selector) && !rule.selector.includes(':has(dialog:modal)') && !rule.selector.startsWith('#helpDialog'))
     .map(rule => [compact(rule.selector), compact(rule.body)]);
   assert.deepEqual(geometry, [
   [
@@ -122,13 +122,11 @@ test('the existing local-processing badge uses only a decorative shield', () => 
   assert.match(badge, /完全ローカル処理/);
 });
 
-test('Japanese and English Help explain close routes without layout commentary', () => {
+test('Help scrolls its body beneath a fixed header and omits redundant guidance', () => {
   const help = html.match(/<dialog id="helpDialog"[\s\S]*?<\/dialog>/)?.[0];
-  const note = help?.match(/<p id="helpDialogScroll"[^>]*>([^<]+)<\/p>/)?.[0];
-  assert.ok(note, 'Help scroll guidance exists');
-  const attrs = Object.fromEntries([...note.matchAll(/([\w-]+)="([^"]*)"/g)].map(match => [match[1], match[2]]));
-  assert.doesNotMatch(attrs['data-ja'], /背景.*スクロール/);
-  assert.match(attrs['data-ja'], /閉じる.*Esc.*外側/);
-  assert.doesNotMatch(attrs['data-en'], /background.*scroll/i);
-  assert.match(attrs['data-en'], /Close.*Esc.*outside/);
+  assert.ok(help);
+  assert.doesNotMatch(help, /初回画面で日本語・English|Choose your language during setup|使い方は「閉じる」|Dismiss Help with Close/);
+  const ruleFor = selector => rules.find(rule => rule.selector === selector)?.body || '';
+  assert.match(ruleFor('#helpDialog[open]'), /overflow:\s*hidden/);
+  assert.match(ruleFor('#helpDialog .dialog-body'), /overflow-y:\s*auto/);
 });

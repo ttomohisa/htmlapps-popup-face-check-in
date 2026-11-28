@@ -5,7 +5,7 @@
 - **Name:** Pop-up Face Check-in
 - **Purpose:** イベント・受付・集まりで一時的に使う、端末内完結の顔照合受付ツール。
 - **Primary users:** 飲み会・社内イベント・セミナー・学校/サークル・スポーツ大会・展示会などの受付担当者。
-- **Release artifact:** `dist/index.html`
+- **Release artifact:** `dist/index.html`（同内容の `popup-face-check-in.html` も生成）。配布用ZIPでは `dist/index.html` を開く。
 
 ## 2. Product principles
 
@@ -17,21 +17,22 @@
 
 ## 3. Core user flow
 
-1. 起動時に利用方法（受付 / 入退場）と保存期間を選択する。
+1. 起動時に日本語・Englishを切り替え、利用方法（受付 / 入退場）と保存期間を選択する。
 2. 生体情報の取扱い注意を確認してセッションを開始する。
-3. 1人1枚の顔画像をまとめて登録し、必要な人だけ最大3枚まで追加する。
+3. 1人1枚の顔画像をまとめて登録し、必要に応じて各人にあと2枚まで追加する（合計最大3枚）。写真を使わない参加者は名前だけ登録し、手動受付する。
 4. 受付画面でカメラを開始し、同じ人物が連続一致した場合のみ自動記録する。
-5. 顔照合できない場合は登録者検索から手動で受付 / 入退場を記録する。
+5. カメラの利用権限や顔照合の準備状態にかかわらず、受付画面と事前確認から登録者検索を開き、手動で受付 / 入退場を記録する。
 6. 履歴を確認し、必要なら確認ダイアログ付きで記録を取り消し、直後はUndoできる。
-7. 利用終了後は受付結果をCSV / JSONで保存し、顔データを全削除する。
+7. 利用終了時は履歴の「受付を終了」から全件数を確認し、必要に応じて全履歴CSVを保存する。端末データの削除は別途確認を経て実行する。
 
 ## 4. Functional requirements
 
 - YuNet + SFace INT8をONNX Runtime Webで実行する。
 - OpenCV.jsを使用せず、画像処理・顔位置合わせはCanvas / JavaScriptで行う。
-- 1人につき1〜3件の照合用データを保持し、最大一致度を人物スコアとする。
+- 顔写真で登録した人は1〜3件の照合用データを保持し、最大一致度を人物スコアとする。
 - 保存期間は「今日だけ / ブラウザを閉じるまで / 手動で削除」。
-- 登録情報はパスワード保護した `.popupface` で持ち運べる。
+- 「登録者」に登録人数、受付済み人数（入退場では会場内人数）、照合データの合計件数を表示する。名前検索と状態フィルターは一覧の表示だけに適用する。
+- 「参加者リスト」の「CSVを保存」で名前だけを保存する。「登録データ」の「保存」「読み込み」はパスワードで保護した `.popupface` を扱う。追加時は既存IDをスキップして履歴を保持し、置き換え時は現在の名簿と履歴を入れ替えて受付を新しく始める。
 - 履歴は名前の部分一致（前後空白を除外、大文字小文字を区別しない）と記録方法（すべて / 手動 / 顔照合）を組み合わせて絞り込み、新しい順に表示する。表示件数 / 全件数、該当なし表示、絞り込み解除を提供する。
 - 履歴の絞り込みは表示だけに適用し、セッション集計・直近の受付・CSV / JSONは全履歴を対象とする。出力ボタンと説明で全履歴を出力することを明示し、顔画像・照合用データを含めない。
 - 履歴の絞り込みは言語変更・記録更新・Undoで維持し、新規開始・全削除・期限切れ・登録データの置き換えで解除する。
@@ -43,7 +44,9 @@
 
 ## 5. Data and privacy
 
-保存対象: 名前、代表用の小さな顔画像、1人1〜3件の照合用データ、登録日時 / 保存期限、受付または入退場履歴。
+保存対象: 名前、代表用の小さな顔画像、写真登録1人につき1〜3件の照合用データ、登録日時 / 保存期限、受付または入退場履歴。
+
+名前だけで登録した人には顔画像・照合用データを保存しない。写真付き登録だけの `.popupface` は引き続き形式1、名前のみの登録を含む場合は形式2とする。どちらも履歴を含めない。同姓同名の区別用に任意の所属・受付番号（最大40文字）を暗号化名簿に保存し、参加者CSV・履歴CSV/JSONには出力しない。手動受付の検索で該当者がいない場合は名前で登録し、その後の操作で受付を記録する。直前の記録は同じ画面で取り消せる。
 
 保存しないもの: 登録元画像、2枚目・3枚目の追加写真そのもの、カメラ映像 / 照合フレーム。
 
@@ -64,20 +67,20 @@
 
 - 受付中のUIを推論で固めない。
 - カメラ推論は約0.8秒間隔。
-- 単一HTMLはgzip内包により実用的なサイズを維持する（現状約13MB）。
+- 単一HTMLはgzip内包により実用的なサイズを維持する（v1.1.0の配布サイズは約13.5 MiB。実測値は `dist/build-size-report.json`）。
 
 ## 9. Browser target
 
-Current stable Chromium / Firefox / Safari on desktop and mobile. Camera use requires localhost or HTTPS.
+Current stable Chromium / Firefox / Safari on desktop and mobile. Camera use requires browser permission and a secure context. Use HTTPS or localhost when a browser restricts local-file camera access. Name registration and manual reception are available without a camera or a ready matching engine.
 
 ## 10. Acceptance criteria
 
 - `setup-assets.bat` で固定バージョンの実行資産を取得できる。
 - `build-standalone.bat` で `dist/index.html` を生成できる。
-- 配布版のCSPは実行時ネットワーク接続を禁止する。
+- 配布版のCSPはHTTP/HTTPSの実行時通信を遮断し、`connect-src blob:` で内包WASMを読み込める。
 - `dist/build-size-report.json` に内包サイズの内訳を出力する。
 - スマホ下部バー、ヘルプ、確認ダイアログ、Undo、safe areaが機能する。
-- `assets/screenshot.png` と `assets/screenshot-mobile.png` が現在UIを表す。
+- `assets/screenshot.png`、`assets/screenshot-en.png`、`assets/screenshot-mobile.png` が現在UIを表す。
 - ダークモードを追加しない。
 
 ## Header normalization (1.0.1)
@@ -86,9 +89,9 @@ Current stable Chromium / Firefox / Safari on desktop and mobile. Camera use req
 - Existing Japanese local-processing badges use 完全ローカル処理, with accurate English wording retained. Layout, processing boundaries, persistence, model/camera behavior, and their existing limitations are unchanged.
 
 - Help closes on a backdrop click outside its actual rectangle, keeps inside clicks open, and restores focus to its opener.
-- Known localization limit: the static Help body remains mostly Japanese in the English UI; header localization does not imply full Help-content translation.
+- In v1.1.0 the Help instructions and privacy guidance follow the selected language.
 
-## Startup localization (1.0.4)
+## Startup localization
 
 - The header subtitle and current initialization status follow the selected Japanese / English language without reloading.
 - Language switches preserve the current loading phase, ready elapsed time, and startup error detail/state. Model initialization, camera access, sessions and data handling are unchanged.
@@ -100,8 +103,8 @@ Current stable Chromium / Firefox / Safari on desktop and mobile. Camera use req
 
 ## Modal scrolling (1.0.6)
 
-- Lock page-root scrolling only while a native modal dialog is open; preserve all existing dialog sizes, internal scrolling and close behavior.
-- Keep the local-processing badge accurate and use a decorative shield; its equivalent English label follows the canonical wording documented below. Help explains dismissal in Japanese and English without implementation commentary.
+- Lock page-root scrolling only while a native modal dialog is open; keep the Help header and its close control in place while the Help body scrolls.
+- Keep the local-processing badge accurate and use a decorative shield; its equivalent English label follows the canonical wording documented below.
 
 ## Informational footer and Help metadata
 
