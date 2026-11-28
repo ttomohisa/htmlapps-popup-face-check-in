@@ -4,10 +4,14 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
 const source = fs.readFileSync(process.env.APP_HTML || path.join(__dirname, '../src/index.template.html'), 'utf8');
-const functions = ['isNameOnly', 'portraitHtml', 'filteredHistoryRows', 'escapeHtml', 'cardHtml', 'renderHistory', 'renderManualReceptionResults'].map(name => {
-  const line = source.split(/\r?\n/).find(line => line.startsWith(`function ${name}(`));
-  assert.ok(line, `source function ${name}`);
-  return line;
+const functions = ['nameKey', 'duplicateNames', 'receptionName', 'hintEditor', 'matchingAttendees', 'isNameOnly', 'portraitHtml', 'filteredHistoryRows', 'escapeHtml', 'cardHtml', 'renderHistory', 'renderManualReceptionResults'].map(name => {
+  const lines = source.split(/\r?\n/);
+  const index = lines.findIndex(line => line.startsWith(`function ${name}(`));
+  assert.ok(index >= 0, `source function ${name}`);
+  if (lines[index].endsWith('}')) return lines[index];
+  const close = lines.findIndex((line, n) => n > index && line === '}');
+  assert.ok(close > index);
+  return lines.slice(index, close + 1).join('\n');
 }).join('\n');
 function render(id, eventId, entryExit, checked) {
   const person = { id, name: 'Test person', checkedInAt: checked ? 1700000000000 : null };
@@ -16,7 +20,7 @@ function render(id, eventId, entryExit, checked) {
     if (!elements.has(key)) elements.set(key, { value: '', innerHTML: '', querySelectorAll: () => [] });
     return elements.get(key);
   };
-  const context = vm.createContext({ $, people: [person], historyQuery: '', historyMethod: 'all', document: { querySelectorAll: () => [] },
+  const context = vm.createContext({ $, walkInPending: false, recordedRow: null, people: [person], historyQuery: '', historyMethod: 'all', document: { querySelectorAll: () => [] },
     thumbnailUrl: () => 'blob:synthetic-thumbnail', embeddingModelOf: () => 'model', EMBEDDING_MODEL: 'model',
     embeddingCount: () => 2, MAX_EMBEDDINGS: 3, isEntryExit: () => entryExit, isInside: () => checked,
     checkinMethodOf: () => 'manual', checkEventsOf: () => [{ id: eventId }],

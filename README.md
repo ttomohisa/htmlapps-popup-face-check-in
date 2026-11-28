@@ -61,9 +61,9 @@ Then open the local URL printed by the script. `localhost` is treated as a secur
 
 1. Select Japanese or English in the setup dialog, then choose **Check-in** or **Entry / Exit**.
 2. Choose how long data should remain: **Today only**, **Until the browser closes**, or **Delete manually**.
-3. Register guests by name only for manual check-in, or add a photo for face matching. A participant registered with photos can have up to three matching samples; original registration photos are not retained by the app after processing.
+3. Choose **By photo** or **By name** in Register. Guests with the same name can have an optional group or ticket number. A participant registered with photos can have up to three matching samples; original registration photos are not retained by the app after processing.
 4. Open Reception mode and start the camera. The app confirms the same person twice before automatic face-based check-in.
-5. If matching does not work well, search the registered-person list and check the person in manually without leaving the reception workflow.
+5. In manual reception, search for an attendee and record their attendance. If the name is missing, add the guest and then check them in. Choose Undo in the same dialog to correct the last record.
 6. Review recent activity and history. Search history by name, filter by All / Manual / Face matching, and check the shown/total count. Check-in or entry/exit records can be cancelled after confirmation, with Undo immediately afterward.
 7. Export all attendance history as CSV or JSON when needed. History filters affect only the displayed list; both exports always include every record in the session. These exports do not include face thumbnails or face-matching data.
 8. Open **History → Finish session** to review the full record count, optionally save a CSV and confirm local deletion. Remove any exported `.popupface` files you no longer need.
@@ -98,6 +98,8 @@ The Registered People screen provides two different exports.
 Contains names only. It does **not** include face thumbnails, matching data, or attendance history.
 
 ### Encrypted `.popupface` registration file
+
+Optional details for people with the same name travel with the encrypted roster.
 
 Photo registrations contain the fields below. Name-only registrations omit the thumbnail and matching data. Files containing name-only guests require v1.1.0 or later to import.
 

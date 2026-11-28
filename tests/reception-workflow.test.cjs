@@ -135,3 +135,50 @@ test('camera and manual actions precede the preview in keyboard and visual order
     assert.ok(pos >= 0 && pos < panel.indexOf('id="cameraStage"'), id);
   }
 });
+
+test('duplicate-name hints survive storage, retention changes and encrypted-roster payloads', async () => {
+  const h = harness({ people: [{ id: 'first', name: '山田　葵', registrationType: 'name-only' }] });
+  h.get('attendeeName').value = '山田 葵';
+  h.get('attendeeHint').value = '午後組';
+  await h.run('registerNameOnly()');
+  assert.equal(h.people()[1].nameHint, '午後組');
+  h.context.saved = await h.run('serializeTempPerson(people[1])');
+  assert.equal(h.run('hydrateTempPerson(saved).nameHint'), '午後組');
+  h.context.file = await h.run('buildRegistrationPayload()');
+  assert.equal(h.run("registrationRecordForMode(hydrateRegistrationPerson(file.people[1]),'manual').nameHint"), '午後組');
+  await h.run('manualCheckin(people[1].id)');
+  assert.match(h.toasts.at(-1)[0], /午後組/);
+  h.run('exportPeopleCsv()');
+  assert.doesNotMatch(await h.downloads.at(-1).blob.text(), /午後組/);
+});
+
+test('walk-in registration survives a failed write and a repeated activation without checking anyone in', async () => {
+  const h = harness({ deferred: true });
+  h.get('manualReceptionDialog').open = true;
+  h.get('manualReceptionSearch').value = 'Walk-in';
+  const failed = h.run('registerWalkIn()');
+  h.reject(); await failed;
+  assert.equal(h.people().length, 0);
+  const retry = h.run('registerWalkIn()');
+  await h.run('registerWalkIn()');
+  h.release(); await retry;
+  await h.run('registerWalkIn()');
+  assert.equal(h.people().length, 1);
+  assert.equal(h.run('historyRows().length'), 0);
+  assert.equal(h.get('manualReceptionSearch').value, 'Walk-in');
+});
+
+for (const mode of ['checkin', 'entryexit']) {
+  test(mode + ' Undo keeps the saved record on a failed write and can be retried', async () => {
+    const h = harness({ mode, people: [{id:'person', name:'Guest'}], deferred:true });
+    const record = h.run("manualCheckin('person')");
+    h.release(); await record;
+    const undo = h.toasts.at(-1)[1];
+    const failedUndo = undo();
+    h.reject(); await failedUndo;
+    assert.equal(h.run('historyRows().length'), 1);
+    const retry = h.toasts.at(-1)[1]();
+    h.release(); await retry;
+    assert.equal(h.run('historyRows().length'), 0);
+  });
+}

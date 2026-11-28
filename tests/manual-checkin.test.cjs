@@ -32,12 +32,12 @@ test('one-time check-in still ignores overlapping and later activations', async 
   assert.equal(h.writes.length, 1); assert.equal(h.toasts.length, 1);
   assert.equal(h.people()[0].checkedInMethod, 'manual');
 });
-test('a rejected save releases the guard without claiming to roll back existing state', async () => {
+test('retry after a failed save records the original entry', async () => {
   const h = harness({ people: sample(), deferred: true });
   const call = h.context.manualCheckin('synthetic-0'); const rejection = assert.rejects(call, /Synthetic storage failure/);
-  h.reject(); await rejection;
+  h.reject(); await rejection; assert.deepEqual(types(h), []);
   const next = h.context.manualCheckin('synthetic-0'); h.release(); await next;
-  assert.equal(h.writes.length, 2); assert.deepEqual(types(h), ['in', 'out']);
+  assert.equal(h.writes.length, 2); assert.deepEqual(types(h), ['in']);
 });
 test('manual entry Undo removes the recorded event and permits another entry', async () => {
   const h = harness({ people: sample() });
