@@ -182,3 +182,166 @@ for (const mode of ['checkin', 'entryexit']) {
     assert.equal(h.run('historyRows().length'), 0);
   });
 }
+
+for (const mode of ['checkin', 'entryexit']) {
+  test(mode + ' history cancellation and restoration can both retry a failed save', async () => {
+    const event = { id: 'entry', at: 1800000000000, type: 'in', method: 'face', score: 0.8 };
+    const person = { id: 'p', name: 'P', checkedInAt: event.at, checkedInMethod: 'face',
+      checkedInScore: event.score, checkEvents: mode === 'entryexit' ? [event] : [] };
+    const h = harness({ mode, people: [person], deferred: true });
+    h.run("bindUi(); resetCheckin('p')");
+    const confirm = () => h.get('resetCheckinConfirm').dispatch('click');
+    const failed = confirm();
+    h.reject(); await Promise.allSettled([failed]);
+    assert.equal(h.run('historyRows().length'), 1);
+    const retry = confirm();
+    h.release(); await retry;
+    assert.equal(h.run('historyRows().length'), 0);
+    const restore = h.toasts.at(-1)[1];
+    const failedRestore = restore();
+    h.reject(); await Promise.allSettled([failedRestore]);
+    assert.equal(h.run('historyRows().length'), 0);
+    const restored = h.toasts.at(-1)[1]();
+    h.release(); await restored;
+    assert.equal(h.run('historyRows().length'), 1);
+    assert.equal(h.people()[0].checkedInScore, event.score);
+    assert.equal(h.people()[0].checkedInMethod, 'face');
+  });
+}
+
+test('failed roster rename keeps the saved name and concurrent check-in persists the new name', async () => {
+  const { element } = require('./helpers/app-harness.cjs');
+  const h = harness({ mode:'checkin', people: [{ id:'p', name:'Before' }], deferred:true });
+  const input = element({ name: 'p' });
+  h.selectors.set('[data-name]', [input]);
+  h.run('bindCards()');
+  input.value = 'After';
+  const failed = input.dispatch('change');
+  h.reject(); await Promise.allSettled([failed]);
+  assert.equal(h.people()[0].name, 'Before');
+  assert.equal(input.value, 'Before');
+  input.value = 'After';
+  const rename = input.dispatch('change'), record = h.run("manualCheckin('p')");
+  h.release(); await rename;
+  h.release(); await record;
+  assert.equal(h.writes.at(-1).name, 'After');
+  assert.equal(h.writes.at(-1).checkedInAt, h.people()[0].checkedInAt);
+});
+
+test('removing an extra photo and undoing it preserve the saved vectors on failure', async () => {
+  const h = harness({ people: [{ id:'p', name:'P', embeddings:[[1],[2],[3]] }], deferred:true });
+  h.run("bindUi(); removeLastEmbedding('p')");
+  const confirm = () => h.get('removeEmbeddingConfirm').dispatch('click');
+  const failed = confirm();
+  h.reject(); await Promise.allSettled([failed]);
+  assert.equal(h.run('embeddingCount(people[0])'), 3);
+  const retry = confirm();
+  h.release(); await retry;
+  assert.equal(h.run('embeddingCount(people[0])'), 2);
+  const undo = h.toasts.at(-1)[1]();
+  h.reject(); await Promise.allSettled([undo]);
+  assert.equal(h.run('embeddingCount(people[0])'), 2);
+  const restore = h.toasts.at(-1)[1]();
+  h.release(); await restore;
+  assert.deepEqual(Array.from(h.people()[0].embeddings, e => e[0]), [1,2,3]);
+});
+
+test('a synchronous failure staging a persistent snapshot aborts its pending clear', async () => {
+  const h = harness();
+  let aborted = false;
+  h.context.failingTransaction = { objectStore: () => ({ clear() {}, put() { throw Error('Failed to stage record'); } }),
+    abort() { aborted = true; } };
+  h.run('db={transaction:()=>failingTransaction}');
+  await assert.rejects(h.run("tx('readwrite', store => { store.clear(); store.put({}); })"), /Failed to stage record/);
+  assert.equal(aborted, true);
+});
+
+test('canceling a pending decryption keeps its roster out of a later import', async () => {
+  const h = harness();
+  let complete;
+  h.context.decryptPending = () => new Promise(resolve => { complete = resolve; });
+  h.get('registrationImportPassword').value = 'long enough';
+  h.run("pendingRegistrationEnvelope={};decryptRegistrationEnvelope=decryptPending;fillRegistrationImportPreview=()=>{}");
+  const attempt = h.run('decryptSelectedRegistration()');
+  h.run('closeRegistrationImport();pendingRegistrationEnvelope={}');
+  complete({people: [{id:'previous'}]}); await attempt;
+  assert.equal(h.run('pendingRegistrationPayload'), null);
+});
+
+for (const action of ['clearAllBiometricData()', 'handleSessionExpiry()']) {
+  test(action + ' discards late name registration and pending photo data', async () => {
+    const h = harness({ deferred: true });
+    h.context.console = { error() {}, warn() {} };
+    h.get('attendeeName').value = 'Old guest';
+    h.run("storageMode='today';sessionMeta.expiresAt=1;openSessionDialog=()=>{}");
+    const name = h.run('registerNameOnly()');
+    h.context.setTimeout = callback => { callback(); return 0; };
+    let finishPhoto, startedPhoto;
+    const detecting = new Promise(resolve => { startedPhoto = resolve; });
+    h.context.detectPhoto = () => {
+      startedPhoto();
+      return new Promise(resolve => { finishPhoto = resolve; });
+    };
+    h.run("detector={};fileToCanvas=async()=>({});detectExtract=detectPhoto;canvasBlob=async()=>null");
+    const photo = h.run("registerFiles([{type:'image/png',name:'old-photo.png'}])");
+    await detecting;
+    await h.run(action);
+    h.run("sessionMeta={id:'next',mode:'manual'};storageMode='manual'");
+    finishPhoto({ embedding: new Float32Array([1]), thumbnailCanvas: {} });
+    h.release();
+    await name;
+    await new Promise(resolve => setImmediate(resolve));
+    h.release(); await photo;
+    assert.equal(h.people().length, 0);
+    assert.equal(h.writes.length, 1, 'only the previously submitted name reached storage');
+  });
+}
+
+test('a session-storage thumbnail finishing after deletion cannot recreate a person', async () => {
+  const h = harness();
+  let finishThumbnail;
+  const thumb = { arrayBuffer: () => new Promise(resolve => { finishThumbnail = resolve; }) };
+  const keys = new Map();
+  h.context.sessionStorage = { getItem: k => keys.get(k) ?? null, setItem: (k,v) => keys.set(k,v), removeItem: k => keys.delete(k) };
+  h.context.btoa = btoa;
+  h.context.latePerson = {id:'old', name:'Guest', thumbnail:thumb};
+  const writing = h.run('putTempPerson(latePerson)');
+  await h.run('clearAllBiometricData()');
+  finishThumbnail(new ArrayBuffer(1));
+  await Promise.allSettled([writing]);
+  assert.equal(keys.size, 0);
+});
+
+test('a failed duplicate-photo merge leaves the original matching vectors intact', async () => {
+  const h = harness({ people: [{ id:'p', name:'P', embeddings:[[1]] }], deferred: true });
+  h.context.setTimeout = callback => { callback(); return 0; };
+  h.context.console = { warn() {} };
+  let saving;
+  const saved = new Promise(resolve => { saving = resolve; });
+  h.context.signalSave = saving;
+  h.run(`detector={};fileToCanvas=async()=>({});detectExtract=async()=>({embedding:new Float32Array([2])});
+    duplicateCandidateFor=()=>({p:people[0]});askDuplicateRegistration=async()=>'merge';
+    putPerson=p=>{signalSave();return testPut(p)}`);
+  const merge = h.run("registerFiles([{type:'image/png',name:'photo.png'}])");
+  await saved; h.reject(); await merge;
+  assert.equal(h.run('embeddingCount(people[0])'), 1);
+  assert.equal(h.run('lastRegistrationFailures.length'), 1);
+});
+
+for (const operation of ['changeRetentionMode("session")',
+  'commitImportedSnapshot([], "session", {id:"replacement",mode:"session"})']) {
+  test(operation + ' preserves the current persistent roster when temporary metadata exceeds quota', async () => {
+    const h = harness({people: [{id:'p',name:'Original'}]});
+    h.run(`storageMode='manual';
+      let persistentExists=true, temporaryExists=false;
+      replaceTempSnapshot=async()=>{temporaryExists=true};
+      clearPersistentPeople=async()=>{persistentExists=false};
+      clearTempPeople=()=>{temporaryExists=false};
+      saveSessionMeta=()=>{throw Error('metadata quota exceeded')}`);
+    await assert.rejects(h.run(operation), /quota/);
+    assert.equal(h.run('persistentExists'), true);
+    assert.equal(h.run('temporaryExists'), false);
+    assert.equal(h.people()[0].name, 'Original');
+    assert.equal(h.run('sessionMeta.id'), 'synthetic-session');
+  });
+}

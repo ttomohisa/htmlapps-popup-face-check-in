@@ -1,4 +1,4 @@
-"""Package the verified standalone build in the same layout as the existing releases."""
+"""Package the verified standalone build and the files linked by its offline guides."""
 
 import hashlib
 import json
@@ -11,6 +11,9 @@ ROOT = Path(__file__).resolve().parents[2]
 DISTRIBUTION = (
     "APP_SPEC.md", "CHANGELOG.md", "LICENSE", "README-FIRST.txt", "README.ja.md",
     "README.md", "THIRD_PARTY_NOTICES.md", "app.config.json", "dependencies.json",
+    "CONTRIBUTING.md", "SECURITY.md", "VERIFY_OFFLINE.md",
+    "schemas/app-config.schema.json", "schemas/dependencies.schema.json",
+    "assets/screenshot.png", "assets/screenshot-en.png", "assets/screenshot-mobile.png",
     "dist/build-size-report.json", "dist/index.html",
 )
 

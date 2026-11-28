@@ -26,6 +26,24 @@ async function verify(browser, width, height, workflow) {
     await byId('privacyAck').check();
     await byId('sessionStartBtn').click();
     await page.locator('#runtime.ready').waitFor();
+    await nav('people');
+    assert.ok(await byId('peopleCsvBtn').isDisabled());
+    assert.ok(await byId('registrationExportBtn').isDisabled());
+    assert.ok(await byId('registrationImportBtn').isEnabled());
+    assert.equal(await byId('peopleSearch').getAttribute('placeholder'), 'Search by name');
+    assert.equal(await byId('peopleSearch').getAttribute('aria-label'), 'Search by name');
+    assert.equal(await page.locator('[data-people-filter="all"]').innerText(), 'All');
+    assert.equal(await page.locator('[data-people-filter="all"]').getAttribute('aria-pressed'), 'true');
+    const missingIcons = await page.locator('#view-people use').evaluateAll(icons =>
+      icons.map(icon => icon.getAttribute('href').slice(1)).filter(id => !document.getElementById(id)));
+    assert.deepEqual(missingIcons, []);
+    assert.ok(await byId('view-people').evaluate(el => el.scrollWidth <= el.clientWidth + 1));
+    await byId('helpBtn').click();
+    assert.doesNotMatch(await byId('helpDialog').innerText(), /[ぁ-んァ-ヶ一-龯]/u);
+    const noticeFile = page.waitForEvent('download');
+    await byId('noticesDownload').click();
+    assert.equal(await fs.readFile(await (await noticeFile).path(), 'utf8'), await fs.readFile('THIRD_PARTY_NOTICES.md', 'utf8'));
+    await byId('helpClose').click();
     await nav('check');
     await byId('checkManualBtn').click();
     await byId('manualReceptionSearch').fill('First arrival');
@@ -56,6 +74,19 @@ async function verify(browser, width, height, workflow) {
     await page.reload();
     await page.waitForFunction(() => document.querySelector('#registerCount').textContent === '2');
     assert.equal(await page.locator('html').getAttribute('lang'), 'en');
+    if (width === 1360) {
+      for (const mode of ['manual', 'session']) {
+        await byId('sessionChangeBtn').click();
+        await page.locator('input[name="retention"][value="' + mode + '"]').check();
+        await byId('privacyAck').check();
+        await byId('sessionStartBtn').click();
+        await byId('sessionDialog').waitFor({state:'hidden'});
+        await page.reload();
+        await page.waitForFunction(() => document.querySelector('#registerCount').textContent === '2');
+        await nav('people');
+        assert.deepEqual((await page.locator('#peopleGrid [data-name-hint]').evaluateAll(inputs => inputs.map(i => i.value))).sort(), ['Group A','Group B']);
+      }
+    }
     await nav('check');
     for (const id of ['cameraStartBtn', 'checkManualBtn']) {
       const box = await byId(id).boundingBox();

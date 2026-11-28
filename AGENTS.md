@@ -20,7 +20,7 @@ Read `APP_SPEC.md` before changing product behavior.
 - Matching: SFace 2021dec INT8.
 - Alignment / image processing: Canvas + JavaScript. Do not reintroduce OpenCV.js without an explicit product decision.
 - One person may hold up to three face-matching vectors; use the maximum similarity as that person's score.
-- Preserve the app-specific gzip standalone builder. It is intentionally specialized for ORT assets and currently keeps the single HTML near 13 MB.
+- Preserve the app-specific gzip standalone builder. It is intentionally specialized for ORT assets and reports the packed sizes in `dist/build-size-report.json`.
 - `dist/index.html` is generated. Edit `src/index.template.html`, not `dist/index.html`.
 
 ## Template alignment
@@ -35,7 +35,7 @@ Read `APP_SPEC.md` before changing product behavior.
 
 ## Before handoff
 
-1. Run `check.bat` on Windows (or `scripts/check.ps1`).
+1. Run `scripts/check-repository.ps1 -SkipBuild` from PowerShell.
 2. Run `setup-assets.bat` if runtime assets are missing.
 3. Run `build-standalone.bat`.
 4. Check `dist/build-size-report.json`.

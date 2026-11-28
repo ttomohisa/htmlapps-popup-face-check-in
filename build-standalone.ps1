@@ -84,6 +84,8 @@ function New-PayloadInfo(
 
 New-Item -ItemType Directory -Force $Dist | Out-Null
 $html = Get-Content $Template -Raw -Encoding UTF8
+$notices = [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $Root 'THIRD_PARTY_NOTICES.md')))
+$html = $html.Replace('href="../THIRD_PARTY_NOTICES.md"', ('href="data:text/plain;charset=utf-8;base64,' + $notices + '"'))
 $ortJs = Get-Content (Join-Path $Assets 'ort.wasm.min.js') -Raw -Encoding UTF8
 
 $ortMjs = Join-Path $Assets 'ort-wasm-simd-threaded.mjs'

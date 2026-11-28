@@ -17,7 +17,7 @@ function element(dataset = {}) {
     querySelector() { return null; }, querySelectorAll() { return []; }, close() {}, showModal() {}, focus() {}
   };
 }
-function harness({ mode = 'entryexit', people = [], deferred = false } = {}) {
+function harness({ mode = 'entryexit', people = [], deferred = false, renderResults = false } = {}) {
   const selectors = new Map();
   const elements = new Map(), downloads = [], toasts = [], writes = [], pending = [];
   const filters = ['all', 'manual', 'face'].map(historyMethod => element({ historyMethod }));
@@ -43,8 +43,9 @@ function harness({ mode = 'entryexit', people = [], deferred = false } = {}) {
     putPerson=testPut; showToast=testToast; downloadFile=testDownload;
     thumbnailUrl=()=>''; renderPeople=()=>renderHistory(); renderAll=()=>renderHistory();
     scheduleSessionExpiry=()=>{}; clearPersistentPeople=async()=>{}; clearTempPeople=()=>{};
-    clearSessionMeta=()=>{sessionMeta=null}; saveSessionMeta=meta=>{sessionMeta=meta}; setResult=()=>{};
+    clearSessionMeta=()=>{sessionMeta=null}; saveSessionMeta=meta=>{sessionMeta=meta};
     replacePersistentSnapshot=async()=>{}; replaceTempSnapshot=async()=>{};`, context);
+  if (!renderResults) vm.runInContext('setResult=()=>{}', context);
   return { context, get, filters, selectors, downloads, toasts, writes,
     run: code => vm.runInContext(code, context),
     people: () => vm.runInContext('people', context),

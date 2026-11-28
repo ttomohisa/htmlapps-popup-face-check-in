@@ -2,18 +2,26 @@
 
 ## 1.1.0
 
-- Shorten the introduction and Help copy, keep the Help heading visible while reading, and group history exports by format. Update the registration and photo-drop icons.
+- Stop camera tracks when permission arrives after leaving reception and clear the previous match when a new photo cannot be matched.
+- Keep roster and history changes consistent when storage fills up. Discard pending registrations when the session is deleted or expires.
+- Translate the complete in-app Help and roster controls. Include offline license notices in the standalone HTML and the linked guides in the distribution ZIP.
 
+- Show roster totals for registered people, attendance or current occupancy, and matching samples. Group names-only CSV and encrypted registration file controls separately on the People screen.
+- Shorten the introduction and Help copy, keep the Help heading visible while reading, and group history exports by format. Update the registration and photo-drop icons.
 - Add a photo/name registration switch, walk-in registration and inline Undo at the desk, and optional identifying details for guests with the same name.
 - Choose Japanese or English during setup. Register guests by name only and use manual reception even when the camera or matching engine is unavailable.
 - Put camera and manual actions before the phone preview. Finish a session from History with optional CSV export and separate deletion confirmation.
 - Preserve version 1 photo-only registration files and support encrypted version 2 rosters with name-only guests.
+- Package a standalone HTML, a distribution ZIP and SHA-256 checksums. Merging a version change into `main` runs verification before publishing the tagged release.
+- Drop original skipped-photo references after registration. The operator can review file names and reasons and select replacement photos.
+- Localize Help instructions and privacy guidance in English.
+- Correct YuNet’s model-specific MIT license and include upstream license texts and notices with the distribution.
 
-## Unreleased
+## 1.0.7
 
 - Verify the complete current header version at narrow phone widths; reserve space for the version beside truncated app titles.
 
-- 1.0.7: Use a question-mark Help icon with a clearly visible bottom dot while preserving localized accessible names and Help behavior.
+- Use a question-mark Help icon with a clearly visible bottom dot while preserving localized accessible names and Help behavior.
 
 - Standardize the phone informational footer and English local-processing label.
 
@@ -51,7 +59,7 @@
 - Dismiss Help only on clicks outside its actual dialog bounds, preserve inside clicks, and restore its opener focus.
 - Keep the visible app version and release metadata synchronized; normalize existing Japanese local-processing badges without changing processing behavior.
 
-## Unreleased
+## Earlier development notes (history and matching)
 
 - Add history name search, All / Manual / Face matching filters, a shown/total count, and a clear-filter action in Japanese and English. Filters are display-only; session totals, recent activity, and CSV/JSON exports continue to use all history.
 - Label history exports explicitly as full-history exports and reset filters when a session is cleared or replaced.
@@ -110,7 +118,7 @@
 - Allow WebAssembly compilation with `'wasm-unsafe-eval'`; the current Embind build additionally requires `'unsafe-eval'`.
 - Initial implementation (formerly Face Check) with bulk registration, IndexedDB persistence, 96×96 thumbnails, 128-D cosine matching, daily expiry, and local data deletion.
 
-## Unreleased
+## Earlier development notes (template and reception)
 
 - Align the repository shell and documentation with `ttomohisa/htmlapps-template`, including `APP_SPEC.md`, `app.config.json`, dependency metadata, AGENTS guidance, offline/security notes, standalone verification, and build-size reporting.
 - Replace the bespoke smartphone navigation with the template-style safe-area-aware fixed mobile bottom bar and add the standard footer / reduced-motion behavior.
